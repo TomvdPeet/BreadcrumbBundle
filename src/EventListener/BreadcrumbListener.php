@@ -14,44 +14,24 @@ namespace APY\BreadcrumbTrailBundle\EventListener;
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 use APY\BreadcrumbTrailBundle\Annotation\ResetBreadcrumbTrail;
 use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
-use APY\BreadcrumbTrailBundle\MixedAnnotationWithAttributeBreadcrumbsException;
-use Doctrine\Common\Annotations\Reader;
-use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class BreadcrumbListener
 {
-    /**
-     * @var Reader An Reader instance
-     */
-    protected $reader;
-
-    /**
-     * @var Trail An Trail instance
-     */
-    protected $breadcrumbTrail;
-
-    private $supportedAttributes = [
+    const SUPPORTED_ATTRIBUTES = [
         Breadcrumb::class,
         ResetBreadcrumbTrail::class,
     ];
 
-    /**
-     * Constructor.
-     *
-     * @param Reader $reader          An Reader instance
-     * @param Trail  $breadcrumbTrail An Trail instance
-     */
-    public function __construct(Reader $reader, Trail $breadcrumbTrail)
+
+    public function __construct(
+        protected Trail $breadcrumbTrail
+    )
     {
-        $this->reader = $reader;
-        $this->breadcrumbTrail = $breadcrumbTrail;
     }
 
-    /**
-     * @param \Symfony\Component\HttpKernel\Event\FilterControllerEvent|\Symfony\Component\HttpKernel\Event\ControllerEvent $event
-     */
-    public function onKernelController(KernelEvent $event)
+    public function onKernelController(ControllerEvent $event)
     {
         $controller = $event->getController();
 
@@ -61,49 +41,15 @@ class BreadcrumbListener
         // Annotations from class
         $class = new \ReflectionClass($reflectableClass);
 
-        // Manage JMSSecurityExtraBundle proxy class
-        if (false !== $className = $this->getRealClass($class->getName())) {
-            $class = new \ReflectionClass($className);
-        }
-
-        if ($class->isAbstract()) {
-            throw new \InvalidArgumentException(sprintf('Annotations from class "%s" cannot be read as it is abstract.', $class));
-        }
-
-        if (HttpKernelInterface::MASTER_REQUEST == $event->getRequestType()) {
+        if (HttpKernelInterface::MAIN_REQUEST == $event->getRequestType()) {
             $this->breadcrumbTrail->reset();
 
-            // Annotations from class
-            $classBreadcrumbs = $this->reader->getClassAnnotations($class);
-            if ($this->supportsLoadingAttributes()) {
-                $classAttributeBreadcrumbs = $this->getAttributes($class);
-                if (\count($classBreadcrumbs) > 0) {
-                    trigger_deprecation('apy/breadcrumb-bundle', '1.7', 'Please replace the annotations in "%s" with attributes. Adding Breadcrumbs via annotations is deprecated and will be removed in v2.0, but luckily your platform supports using Attributes.', $class->name);
-                }
-                if (\count($classAttributeBreadcrumbs) > 0) {
-                    if (\count($classBreadcrumbs) > 0) {
-                        throw MixedAnnotationWithAttributeBreadcrumbsException::forClass($class->name);
-                    }
-                    $classBreadcrumbs = $classAttributeBreadcrumbs;
-                }
-            }
+            $classBreadcrumbs = $this->getAttributes($class);
             $this->addBreadcrumbsToTrail($classBreadcrumbs);
 
-            // Annotations from method
+            // z from method
             $method = $class->getMethod($reflectableMethod);
-            $methodBreadcrumbs = $this->reader->getMethodAnnotations($method);
-            if ($this->supportsLoadingAttributes()) {
-                $methodAttributeBreadcrumbs = $this->getAttributes($method);
-                if (\count($methodBreadcrumbs) > 0) {
-                    trigger_deprecation('apy/breadcrumb-bundle', '1.7', 'Please replace the annotations in "%s" with attributes. Adding Breadcrumbs via annotations is deprecated and will be removed in v2.0, but luckily your platform supports using Attributes.', $class->name.'::'.$method->name);
-                }
-                if (\count($methodAttributeBreadcrumbs) > 0) {
-                    if (\count($methodBreadcrumbs) > 0) {
-                        throw MixedAnnotationWithAttributeBreadcrumbsException::forClassMethod($class->name, $method->name);
-                    }
-                    $methodBreadcrumbs = $methodAttributeBreadcrumbs;
-                }
-            }
+            $methodBreadcrumbs = $this->getAttributes($method);
             $this->addBreadcrumbsToTrail($methodBreadcrumbs);
         }
     }
@@ -148,15 +94,6 @@ class BreadcrumbListener
         }
     }
 
-    private function getRealClass($className)
-    {
-        if (false === $pos = strrpos($className, '\\__CG__\\')) {
-            return false;
-        }
-
-        return substr($className, $pos + 8);
-    }
-
     private function supportsLoadingAttributes(): bool
     {
         return \PHP_VERSION_ID >= 80000;
@@ -175,7 +112,7 @@ class BreadcrumbListener
 
         $attributes = [];
         foreach ($reflected->getAttributes() as $reflectionAttribute) {
-            if (false === \in_array($reflectionAttribute->getName(), $this->supportedAttributes)) {
+            if (false === \in_array($reflectionAttribute->getName(), self::SUPPORTED_ATTRIBUTES)) {
                 continue;
             }
 

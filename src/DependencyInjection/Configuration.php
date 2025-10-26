@@ -15,12 +15,11 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    #[\ReturnTypeWillChange]
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('apy_breadcrumb_trail');
-        // BC layer for symfony/config < 4.2
-        $rootNode = method_exists($treeBuilder, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('apy_breadcrumb_trail');
+
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
