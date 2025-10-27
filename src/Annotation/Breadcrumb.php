@@ -27,7 +27,7 @@ class Breadcrumb
         private array|string|null $title = null,
         private ?string           $routeName = null,
         private ?array            $routeParameters = [],
-        private bool              $routeAbsolute = false,
+        private bool              $routeAbsolute = true,
         private int               $position = 0,
         private ?string           $template = null,
         private array             $attributes = []

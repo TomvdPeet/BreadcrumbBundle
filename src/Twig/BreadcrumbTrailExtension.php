@@ -42,6 +42,7 @@ class BreadcrumbTrailExtension extends AbstractExtension
     {
         return [
             new TwigFunction('apy_breadcrumb_trail_render', [$this, 'renderBreadcrumbTrail'], ['is_safe' => ['html']]),
+            new TwigFunction('apy_breadcrumb_jsonld_render', [$this, 'renderBreadcrumbJsonld'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -54,6 +55,14 @@ class BreadcrumbTrailExtension extends AbstractExtension
     {
         return $this->templating->render(
             null === $template ? $this->trail->getTemplate() : $template,
+            ['breadcrumbs' => $this->trail]
+        );
+    }
+
+    public function renderBreadcrumbJsonld()
+    {
+        return $this->templating->render(
+            "@APYBreadcrumbTrail/json-ld.html.twig",
             ['breadcrumbs' => $this->trail]
         );
     }
