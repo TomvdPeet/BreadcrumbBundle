@@ -19,7 +19,9 @@
         "twig/twig": "To allow adding breadcrumbs via Twig templates."
     },
     "autoload": {
-        "psr-4": { "APY\\BreadcrumbTrailBundle\\": "src/" }
+        "psr-4": {
+          "APY\\BreadcrumbTrailBundle\\": "src/"
+        }
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^5.0|^6.0",
@@ -28,6 +30,8 @@
         "symfony/twig-bundle": "^3.4|^4.0|^5.0|^6.0"
     },
     "autoload-dev": {
-        "psr-4": { "APY\\BreadcrumbTrailBundle\\": "tests/" }
+        "psr-4": {
+          "APY\\BreadcrumbTrailBundle\\": "tests/"
+        }
     }
 }
