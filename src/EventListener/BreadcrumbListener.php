@@ -33,25 +33,31 @@ class BreadcrumbListener
 
     public function onKernelController(ControllerEvent $event)
     {
+        if (HttpKernelInterface::MAIN_REQUEST != $event->getRequestType()) {
+            return;
+        }
+
         $controller = $event->getController();
 
-        $reflectableClass = \is_array($controller) ? $controller[0] : \get_class($controller);
+        $reflectableClass = \is_array($controller) ? $controller[0] : \get_class($controller[0]);
         $reflectableMethod = \is_array($controller) ? $controller[1] : '__invoke';
 
         // Annotations from class
         $class = new \ReflectionClass($reflectableClass);
 
-        if (HttpKernelInterface::MAIN_REQUEST == $event->getRequestType()) {
-            $this->breadcrumbTrail->reset();
+        $this->breadcrumbTrail->reset();
 
-            $classBreadcrumbs = $this->getAttributes($class);
-            $this->addBreadcrumbsToTrail($classBreadcrumbs);
+        //TODO: only add if method has attribute
 
-            // z from method
-            $method = $class->getMethod($reflectableMethod);
-            $methodBreadcrumbs = $this->getAttributes($method);
-            $this->addBreadcrumbsToTrail($methodBreadcrumbs);
-        }
+        //Breadcrumbs from class
+        $classBreadcrumbs = $this->getAttributes($class);
+        $this->addBreadcrumbsToTrail($classBreadcrumbs);
+
+        // Breadcrumbs from method
+        $method = $class->getMethod($reflectableMethod);
+
+        $methodBreadcrumbs = $this->getAttributes($method);
+        $this->addBreadcrumbsToTrail($methodBreadcrumbs);
     }
 
     /**
