@@ -1,37 +1,9 @@
 # Configuration
 
-Add breadcumbs to the trail with annotations in your controller, invokable controller
-or any other callable. You can add breadcrumbs using annotations, attributes or PHP.
-
-Since version 1.7 annotations are deprecated and using PHP attributes is preferred.
-Annotations and will be removed in 2.0. After the below basic example all
-documentation will use attributes.
+Add breadcrumbs to the trail with PHP attributes in your controller, invokable
+controller or any other callable. You can also add breadcrumbs using PHP or Twig.
 
 ## Basic example
-
-### Annotations
-
-```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-
-/**
- * @Breadcrumb("Level 1")
- * @Breadcrumb("Level 2")
- */
-class MyController extends Controller
-{
-    /**
-     * @Breadcrumb("Level 3")
-     * @Breadcrumb("Level 4")
-     */
-    public function myAction()
-    {
-        /* Awesome code here */
-    }
-}
-```
-
-### PHP 8 Attributes
 
 ```php
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
@@ -86,9 +58,9 @@ A full version of the Attribute looks like:
 
 See [here](#basic-example).
 
-#### Title using @ParamConverter
+#### Title using converted route parameters
 
-The [@ParamConverter](symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html#annotation-configuration) of the SensioFrameworkExtraBundle convert request parameters like 'id' to objects then injected as controller method arguments:
+Route parameters like `id` can be converted to objects and injected as controller method arguments:
 
 It is possible to display values of these objects in the breadcrumb.
 

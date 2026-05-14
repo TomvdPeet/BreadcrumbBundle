@@ -51,4 +51,4 @@ The above controller's `myAction` will render the following breadcrumb trail:
 
 * No link is displayed if no route is defined for the breadcrumb or if it's the last breadcrumb of the trail.
 * The first breadcrumb will have the `home` class and the last breadcrumb will have the `current` class.
-* In production environment: To update a breadcrumb translation used with annotation, you also have to update the class file where the breadcrumb is used. Then you can clear the cache.
+* In production environment: To update a breadcrumb translation used with an attribute, you also have to update the class file where the breadcrumb is used. Then you can clear the cache.

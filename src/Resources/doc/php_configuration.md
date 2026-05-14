@@ -4,7 +4,7 @@ How to add breadcumbs to the trail in the controller.
 
 ## Example 1) Injected via the controller's constructor
 
-Autowiring has to be enabled for the folder where the controller is located. Symfony 4 and higher
+Autowiring has to be enabled for the folder where the controller is located.
 by default have autowiring enabled.
 
 ```php

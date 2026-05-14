@@ -1,23 +1,20 @@
 {
     "name": "tomvdpeet/breadcrumb-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony bundle to generate a dynamic Twig breadcrumbs trail via Annotations, PHP Attributes or PHP methods.",
-    "keywords": ["symfony", "breadcrumb Trail", "breadcrumbs", "fil ariane", "annotation"],
+    "description": "Symfony bundle to generate a dynamic Twig breadcrumbs trail via PHP attributes, PHP methods, or Twig.",
+    "keywords": ["symfony", "breadcrumb Trail", "breadcrumbs", "fil ariane", "attribute"],
     "homepage": "https://github.com/Abhoryo/APYBreadcrumbTrailBundle",
     "license": "MIT",
     "require": {
-        "php": ">=8",
-        "symfony/framework-bundle": "^6.0|^7.0|^8.0",
-        "symfony/twig-bundle": "^6.0|^7.0|^8.0",
-        "twig/twig": "^2.15|^3.0",
-        "symfony/deprecation-contracts": "^2.4|^3.0"
+        "php": ">=8.4",
+        "symfony/framework-bundle": "^8.0",
+        "symfony/twig-bundle": "^8.0",
+        "symfony/yaml": "^8.0",
+        "twig/twig": "^3.0"
     },
     "scripts": {
-        "test": "vendor/bin/simple-phpunit --testdox"
-    },
-    "suggest": {
-        "doctrine/doctrine-bundle": "To allow adding breadcrumbs on controller actions by the use of annotations.",
-        "twig/twig": "Twig runtime used by symfony/twig-bundle."
+        "test": "vendor/bin/phpunit --testdox",
+        "static": "vendor/bin/phpstan analyze -c .phpstan.neon --debug --no-progress"
     },
     "autoload": {
         "psr-4": {
@@ -25,9 +22,8 @@
         }
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^5.0|^6.0|^7.0|^8.0",
-        "nyholm/symfony-bundle-test": "^v2.0",
-        "matthiasnoback/symfony-dependency-injection-test": "^4.0"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^13.0"
     },
     "autoload-dev": {
         "psr-4": {

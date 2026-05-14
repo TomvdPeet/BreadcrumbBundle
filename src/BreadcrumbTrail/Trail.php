@@ -61,19 +61,14 @@ class Trail implements \IteratorAggregate, \Countable
     /**
      * Add breadcrumb.
      *
-     * @param mixed       $breadcrumbOrTitle A Breadcrumb instance or the title of the breadcrumb
-     * @param string|null $routeName         The name of the route, or `null` in case no route has to get rendered
-     * @param array       $routeParameters   An array of parameters for the route
-     * @param bool        $routeAbsolute     Whether to generate an absolute URL
-     * @param int         $position          Position of the breadcrumb (default = 0)
-     * @param array       $attributes        Additional attributes for the breadcrumb
+     * @param array<string|int,mixed> $routeParameters An array of parameters for the route
+     * @param array<string,mixed>     $attributes      Additional attributes for the breadcrumb
      *
      * @return self
      *
-     *@throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function add($breadcrumbOrTitle, $routeName = null, $routeParameters = [], $routeAbsolute = true, $position = 0, $attributes = [])
+    public function add(Breadcrumb|string|null $breadcrumbOrTitle, ?string $routeName = null, array $routeParameters = [], bool $routeAbsolute = true, int $position = 0, array $attributes = []): self
     {
         if (null === $breadcrumbOrTitle) {
             return $this->reset();
@@ -82,10 +77,6 @@ class Trail implements \IteratorAggregate, \Countable
         if ($breadcrumbOrTitle instanceof Breadcrumb) {
             $breadcrumb = $breadcrumbOrTitle;
         } else {
-            if (!\is_string($breadcrumbOrTitle)) {
-                throw new \InvalidArgumentException('The title of a breadcrumb must be a string.');
-            }
-
             $request = $this->requestStack->getCurrentRequest();
 
             // Render (traversed) values from the request in the breadcrumb title and route parameters
@@ -105,9 +96,13 @@ class Trail implements \IteratorAggregate, \Countable
 
                 foreach ($routeParameters as $key => $parameterValue) {
                     if (is_numeric($key)) {
-                        $routeParameters[$parameterValue] = $request->get($parameterValue);
+                        $routeParameters[$parameterValue] = $request->attributes->get($parameterValue);
                         unset($routeParameters[$key]);
 
+                        continue;
+                    }
+
+                    if (!\is_string($parameterValue)) {
                         continue;
                     }
 
@@ -123,7 +118,7 @@ class Trail implements \IteratorAggregate, \Countable
                             $routeParameters[$key] = $this->renderObjectValuesInSubject($match, $object, $varName, $parameterValue);
                         }
                     } elseif (preg_match('#^\{(?P<parameter>\w+)\}$#', $parameterValue, $matches)) {
-                        $routeParameters[$key] = $request->get($matches['parameter']);
+                        $routeParameters[$key] = $request->attributes->get($matches['parameter']);
                     }
                 }
             }
@@ -137,12 +132,8 @@ class Trail implements \IteratorAggregate, \Countable
             $breadcrumb = new Breadcrumb($breadcrumbOrTitle, $url, $attributes);
         }
 
-        if (!\is_int($position)) {
-            throw new \InvalidArgumentException('The position of a breadcrumb must be an integer.');
-        }
-
         if (0 === $position || $position > $this->breadcrumbs->count()) {
-            $this->breadcrumbs->attach($breadcrumb);
+            $this->breadcrumbs->offsetSet($breadcrumb);
         } else {
             $this->insert($breadcrumb, $position);
         }
@@ -150,7 +141,7 @@ class Trail implements \IteratorAggregate, \Countable
         return $this;
     }
 
-    private function insert($breadcrumb, $position)
+    private function insert(Breadcrumb $breadcrumb, int $position): void
     {
         if ($position < 0) {
             $position += $this->breadcrumbs->count();
@@ -165,10 +156,10 @@ class Trail implements \IteratorAggregate, \Countable
         $breadcrumbs->rewind();
         while ($breadcrumbs->valid()) {
             if (max(0, $position) == $breadcrumbs->key()) {
-                $this->breadcrumbs->attach($breadcrumb);
+                $this->breadcrumbs->offsetSet($breadcrumb);
             }
 
-            $this->breadcrumbs->attach($breadcrumbs->current());
+            $this->breadcrumbs->offsetSet($breadcrumbs->current());
             $breadcrumbs->next();
         }
     }

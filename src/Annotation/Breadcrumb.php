@@ -15,22 +15,17 @@ namespace APY\BreadcrumbTrailBundle\Annotation;
 class Breadcrumb
 {
     /**
-     * @param array|string|null $title title, or the legacy array that contains all annotation data. Passing `null` to reset the breadcrumb trail is deprecated and will throw an exception in `2.0`.
-     * @param ?string $routeName
-     * @param ?array<string,mixed> $routeParameters
-     * @param bool $routeAbsolute
-     * @param int $position
-     * @param ?string $template
-     * @param array $attributes
+     * @param array<string,mixed> $routeParameters
+     * @param array<string,mixed> $attributes
      */
     public function __construct(
-        private array|string|null $title = null,
-        private ?string           $routeName = null,
-        private ?array            $routeParameters = [],
-        private bool              $routeAbsolute = true,
-        private int               $position = 0,
-        private ?string           $template = null,
-        private array             $attributes = []
+        private string $title,
+        private ?string $routeName = null,
+        private array $routeParameters = [],
+        private bool $routeAbsolute = true,
+        private int $position = 0,
+        private ?string $template = null,
+        private array $attributes = []
     )
     {
     }

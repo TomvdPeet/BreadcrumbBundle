@@ -23,7 +23,7 @@ class BreadcrumbListenerControllerResolutionTest extends TestCase
         $listener = new BreadcrumbListener($trail);
         $controller = new ControllerWithAttributes();
         $event = new ControllerEvent(
-            $this->createMock(HttpKernelInterface::class),
+            $this->createStub(HttpKernelInterface::class),
             [$controller, 'indexAction'],
             new Request(),
             HttpKernelInterface::MAIN_REQUEST
@@ -40,7 +40,7 @@ class BreadcrumbListenerControllerResolutionTest extends TestCase
         $listener = new BreadcrumbListener($trail);
         $controller = new InvokableControllerWithAttributes();
         $event = new ControllerEvent(
-            $this->createMock(HttpKernelInterface::class),
+            $this->createStub(HttpKernelInterface::class),
             $controller,
             new Request(),
             HttpKernelInterface::MAIN_REQUEST
@@ -54,7 +54,7 @@ class BreadcrumbListenerControllerResolutionTest extends TestCase
     private function createTrail(): Trail
     {
         return new Trail(
-            $this->createMock(UrlGeneratorInterface::class),
+            $this->createStub(UrlGeneratorInterface::class),
             new RequestStack()
         );
     }

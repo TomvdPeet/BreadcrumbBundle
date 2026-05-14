@@ -2,7 +2,7 @@ Getting Started With BreadcrumbTrailBundle
 ==========================================
 
 This bundle provides a breadcrumb trail service also known as breadcrumbs or Fil d'Ariane.
-Breadcrumbs can be defined with Attributes, annotations, PHP and Twig.
+Breadcrumbs can be defined with PHP attributes, PHP and Twig.
 
 ## Installation
 
@@ -10,7 +10,7 @@ Please follow the steps given in [installation.md](src/Resources/doc/installatio
 
 ## Bundle documentation
 
-- [Annotation configuration](src/Resources/doc/annotation_configuration.md)
+- [Attribute configuration](src/Resources/doc/attribute_configuration.md)
 - [PHP configuration](src/Resources/doc/php_configuration.md)
 - [Twig configuration](src/Resources/doc/twig_configuration.md)
 - [Render the breadcrumb trail](src/Resources/doc/rendering.md)
@@ -18,18 +18,11 @@ Please follow the steps given in [installation.md](src/Resources/doc/installatio
 
 ## Tests
 
-Several make targets can get used to run the PHPUnit test suite on different PHP environments:
+Run the PHPUnit test suite with Composer:
 
 ```
-$ make test
-$ make test-php73
-$ make test-php74-lowest
+$ composer run test
 ```
-
-In case all test suites pass but running tests still returns an error code, that
-might be related to the number of allowed deprecations. Make sure that the
-`SYMFONY_DEPRECATIONS_HELPER` value of `max[self]` as found in `phpunit.xml.dist`
-matches the "Remaining self deprecation notices" count from the test runner output.
 
 ## Code style
 

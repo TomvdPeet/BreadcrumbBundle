@@ -6,22 +6,19 @@ use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
 use APY\BreadcrumbTrailBundle\DependencyInjection\APYBreadcrumbTrailExtension;
 use APY\BreadcrumbTrailBundle\EventListener\BreadcrumbListener;
 use APY\BreadcrumbTrailBundle\Twig\BreadcrumbTrailExtension;
-use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class ExtensionTest extends AbstractExtensionTestCase
+class ExtensionTest extends TestCase
 {
-    protected function getContainerExtensions(): array
-    {
-        return [
-            new APYBreadcrumbTrailExtension(),
-        ];
-    }
-
     public function testContainerHasExtension()
     {
-        $this->load();
-        $this->assertContainerBuilderHasService(Trail::class);
-        $this->assertContainerBuilderHasService(BreadcrumbListener::class);
-        $this->assertContainerBuilderHasService(BreadcrumbTrailExtension::class);
+        $container = new ContainerBuilder();
+        $extension = new APYBreadcrumbTrailExtension();
+        $extension->load([], $container);
+
+        self::assertTrue($container->hasDefinition(Trail::class));
+        self::assertTrue($container->hasDefinition(BreadcrumbListener::class));
+        self::assertTrue($container->hasDefinition(BreadcrumbTrailExtension::class));
     }
 }

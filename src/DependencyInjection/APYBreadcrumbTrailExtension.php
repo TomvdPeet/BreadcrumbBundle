@@ -15,7 +15,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\HttpKernel\Kernel;
 
 class APYBreadcrumbTrailExtension extends Extension
 {
@@ -33,17 +32,11 @@ class APYBreadcrumbTrailExtension extends Extension
         $loader->load('services.yaml');
 
         $this->deprecateService($container, 'apy_breadcrumb_trail');
-        $this->deprecateService($container, 'apy_breadcrumb_trail.annotation.listener');
     }
 
     private function deprecateService(ContainerBuilder $container, string $id): void
     {
         $alias = $container->getAlias($id);
-        if (version_compare(Kernel::VERSION, '5.1.0', '>=')) {
-            $alias->setDeprecated('APY/BreadcrumbTrailBundle', '1.7', 'The service is deprecated, use "%alias_id%" FQCN as service id instead.');
-        } elseif (version_compare(Kernel::VERSION, '4.3.0', '>=')) {
-            /* @phpstan-ignore-next-line */
-            $alias->setDeprecated();
-        }
+        $alias->setDeprecated('APY/BreadcrumbTrailBundle', '1.7', 'The service is deprecated, use "%alias_id%" FQCN as service id instead.');
     }
 }

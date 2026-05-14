@@ -12,7 +12,7 @@ apy_breadcrumb_trail:
     template: "@APYBreadcrumbTrail/breadcrumbtrail.html.twig"
 ```
 
- - You can define another template in a breadcrumb annotation:
+ - You can define another template in a breadcrumb attribute:
 
 ```php
 use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;

@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class BreadcrumbListener
 {
-    const SUPPORTED_ATTRIBUTES = [
+    private const SUPPORTED_ATTRIBUTES = [
         Breadcrumb::class,
         ResetBreadcrumbTrail::class,
     ];
@@ -42,18 +42,13 @@ class BreadcrumbListener
         $reflectableClass = \is_array($controller) ? $controller[0] : $controller;
         $reflectableMethod = \is_array($controller) ? $controller[1] : '__invoke';
 
-        // Annotations from class
         $class = new \ReflectionClass($reflectableClass);
 
         $this->breadcrumbTrail->reset();
 
-        //TODO: only add if method has attribute
-
-        //Breadcrumbs from class
         $classBreadcrumbs = $this->getAttributes($class);
         $this->addBreadcrumbsToTrail($classBreadcrumbs);
 
-        // Breadcrumbs from method
         $method = $class->getMethod($reflectableMethod);
 
         $methodBreadcrumbs = $this->getAttributes($method);
@@ -61,61 +56,42 @@ class BreadcrumbListener
     }
 
     /**
-     * @param array $annotations Array of Breadcrumb annotations
+     * @param list<Breadcrumb|ResetBreadcrumbTrail> $attributes
      */
-    private function addBreadcrumbsToTrail(array $annotations)
+    private function addBreadcrumbsToTrail(array $attributes)
     {
-        // requirements (@Breadcrumb)
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof ResetBreadcrumbTrail) {
+        foreach ($attributes as $attribute) {
+            if ($attribute instanceof ResetBreadcrumbTrail) {
                 $this->breadcrumbTrail->reset();
 
                 continue;
             }
 
-            if ($annotation instanceof Breadcrumb) {
-                $template = $annotation->getTemplate();
-                $title = $annotation->getTitle();
+            $template = $attribute->getTemplate();
+            $title = $attribute->getTitle();
 
-                if (null === $title) {
-                    trigger_deprecation('apy/breadcrumb-bundle', '1.8', 'Resetting the breadcrumb trail by passing a Breadcrumb without parameters, and will throw an exception in v2.0. Use #[ResetBreadcrumbTrail] attribute instead.');
-                }
-
-                if (null != $template) {
-                    $this->breadcrumbTrail->setTemplate($template);
-                    if (null === $title) {
-                        continue;
-                    }
-                }
-
-                $this->breadcrumbTrail->add(
-                    $title,
-                    $annotation->getRouteName(),
-                    $annotation->getRouteParameters(),
-                    $annotation->getRouteAbsolute(),
-                    $annotation->getPosition(),
-                    $annotation->getAttributes()
-                );
+            if (null != $template) {
+                $this->breadcrumbTrail->setTemplate($template);
             }
-        }
-    }
 
-    private function supportsLoadingAttributes(): bool
-    {
-        return \PHP_VERSION_ID >= 80000;
+            $this->breadcrumbTrail->add(
+                $title,
+                $attribute->getRouteName(),
+                $attribute->getRouteParameters(),
+                $attribute->getRouteAbsolute(),
+                $attribute->getPosition(),
+                $attribute->getAttributes()
+            );
+        }
     }
 
     /**
      * @param \ReflectionClass|\ReflectionMethod $reflected
      *
-     * @return array<Breadcrumb>
+     * @return list<Breadcrumb|ResetBreadcrumbTrail>
      */
     private function getAttributes($reflected): array
     {
-        if (false === $this->supportsLoadingAttributes()) {
-            throw new \RuntimeException('Detected an attempt on getting attributes while your version of PHP does not support this.');
-        }
-
         $attributes = [];
         foreach ($reflected->getAttributes() as $reflectionAttribute) {
             if (false === \in_array($reflectionAttribute->getName(), self::SUPPORTED_ATTRIBUTES)) {

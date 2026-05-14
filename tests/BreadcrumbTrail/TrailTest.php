@@ -11,7 +11,7 @@ class TrailTest extends TestCase
 {
     public function testRenderSimpleValueObjectValueInBreadcrumbTitle()
     {
-        $router = $this->createMock(UrlGeneratorInterface::class);
+        $router = $this->createStub(UrlGeneratorInterface::class);
         $requestStack = new RequestStack();
 
         $expected = 'sample-name';

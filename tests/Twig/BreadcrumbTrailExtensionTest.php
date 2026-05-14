@@ -2,42 +2,21 @@
 
 namespace APY\BreadcrumbTrailBundle\Twig;
 
-use APY\BreadcrumbTrailBundle\APYBreadcrumbTrailBundle;
-use Nyholm\BundleTest\TestKernel;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Bundle\TwigBundle\TwigBundle;
-use Symfony\Component\HttpKernel\KernelInterface;
+use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Environment;
 
 /**
  * @coversDefaultClass \APY\BreadcrumbTrailBundle\Twig\BreadcrumbTrailExtension
  */
-class BreadcrumbTrailExtensionTest extends KernelTestCase
+class BreadcrumbTrailExtensionTest extends TestCase
 {
-    protected static function getKernelClass(): string
-    {
-        return TestKernel::class;
-    }
-
-    protected static function createKernel(array $options = []): KernelInterface
-    {
-        /** @var TestKernel $kernel */
-        $kernel = parent::createKernel($options);
-        $kernel->addTestBundle(APYBreadcrumbTrailBundle::class);
-        $kernel->addTestBundle(TwigBundle::class);
-        $kernel->handleOptions($options);
-
-        return $kernel;
-    }
-
-    /**
-     * @requires PHP >= 8.0
-     */
     public function testTwigFunctionGetsRegistered()
     {
-        $container = self::getContainer();
-
-        /** @var BreadcrumbTrailExtension $extension */
-        $extension = $container->get(BreadcrumbTrailExtension::class);
+        $trail = new Trail($this->createStub(UrlGeneratorInterface::class), new RequestStack());
+        $extension = new BreadcrumbTrailExtension($trail, $this->createStub(Environment::class));
 
         $function = current($extension->getFunctions());
 
