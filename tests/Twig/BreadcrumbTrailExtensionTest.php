@@ -1,15 +1,16 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\Twig;
+namespace TomvdPeet\BreadcrumbBundle\Tests\Twig;
 
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Twig\BreadcrumbTrailExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 /**
- * @coversDefaultClass \APY\BreadcrumbTrailBundle\Twig\BreadcrumbTrailExtension
+ * @coversDefaultClass \TomvdPeet\BreadcrumbBundle\Twig\BreadcrumbTrailExtension
  */
 class BreadcrumbTrailExtensionTest extends TestCase
 {
@@ -18,8 +19,10 @@ class BreadcrumbTrailExtensionTest extends TestCase
         $trail = new Trail($this->createStub(UrlGeneratorInterface::class), new RequestStack());
         $extension = new BreadcrumbTrailExtension($trail, $this->createStub(Environment::class));
 
-        $function = current($extension->getFunctions());
+        $functions = $extension->getFunctions();
 
-        self::assertEquals('apy_breadcrumb_trail_render', $function->getName());
+        self::assertCount(2, $functions);
+        self::assertEquals('tomvd_peet_breadcrumb_trail_render', $functions[0]->getName());
+        self::assertEquals('tomvd_peet_breadcrumb_jsonld_render', $functions[1]->getName());
     }
 }

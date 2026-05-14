@@ -1,9 +1,9 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\Fixtures;
+namespace TomvdPeet\BreadcrumbBundle\Tests\Fixtures;
 
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\Annotation\ResetBreadcrumbTrail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\ResetBreadcrumbTrail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Breadcrumb(title: 'first-breadcrumb')]

@@ -1,8 +1,9 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\Annotation;
+namespace TomvdPeet\BreadcrumbBundle\Tests\Attribute;
 
 use PHPUnit\Framework\TestCase;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 class BreadcrumbTest extends TestCase
 {

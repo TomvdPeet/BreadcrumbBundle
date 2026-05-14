@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the APYBreadcrumbTrailBundle.
+ * This file is part of the BreadcrumbBundle.
  *
  * (c) Abhoryo <abhoryo@free.fr>
  *
@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace APY\BreadcrumbTrailBundle\Twig;
+namespace TomvdPeet\BreadcrumbBundle\Twig;
 
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -28,8 +28,8 @@ class BreadcrumbTrailExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('apy_breadcrumb_trail_render', [$this, 'renderBreadcrumbTrail'], ['is_safe' => ['html']]),
-            new TwigFunction('apy_breadcrumb_jsonld_render', [$this, 'renderBreadcrumbJsonld'], ['is_safe' => ['html']]),
+            new TwigFunction('tomvd_peet_breadcrumb_trail_render', [$this, 'renderBreadcrumbTrail'], ['is_safe' => ['html']]),
+            new TwigFunction('tomvd_peet_breadcrumb_jsonld_render', [$this, 'renderBreadcrumbJsonld'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -44,7 +44,7 @@ class BreadcrumbTrailExtension extends AbstractExtension
     public function renderBreadcrumbJsonld(): string
     {
         return $this->templating->render(
-            "@APYBreadcrumbTrail/json-ld.html.twig",
+            '@TomvdPeetBreadcrumb/json-ld.html.twig',
             ['breadcrumbs' => $this->trail]
         );
     }

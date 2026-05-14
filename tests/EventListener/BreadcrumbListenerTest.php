@@ -1,10 +1,11 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\EventListener;
+namespace TomvdPeet\BreadcrumbBundle\Tests\EventListener;
 
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
-use APY\BreadcrumbTrailBundle\Fixtures\ControllerWithAttributes;
-use APY\BreadcrumbTrailBundle\Fixtures\ResetTrailAttribute;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener;
+use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\ControllerWithAttributes;
+use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\ResetTrailAttribute;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

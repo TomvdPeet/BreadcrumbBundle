@@ -19,7 +19,7 @@ public function registerBundles()
 {
     $bundles = [
         // ...
-        new APY\BreadcrumbTrailBundle\APYBreadcrumbTrailBundle(),
+        new TomvdPeet\BreadcrumbBundle\TomvdPeetBreadcrumbBundle(),
     ];
 }
 ```

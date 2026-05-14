@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the APYBreadcrumbTrailBundle.
+ * This file is part of the BreadcrumbBundle.
  *
  * (c) Abhoryo <abhoryo@free.fr>
  *
@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace APY\BreadcrumbTrailBundle;
+namespace TomvdPeet\BreadcrumbBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class APYBreadcrumbTrailBundle extends Bundle
+class TomvdPeetBreadcrumbBundle extends Bundle
 {
 }

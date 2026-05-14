@@ -1,11 +1,11 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle;
+namespace TomvdPeet\BreadcrumbBundle\Tests;
 
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
-use APY\BreadcrumbTrailBundle\DependencyInjection\APYBreadcrumbTrailExtension;
-use APY\BreadcrumbTrailBundle\EventListener\BreadcrumbListener;
-use APY\BreadcrumbTrailBundle\Twig\BreadcrumbTrailExtension;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\DependencyInjection\TomvdPeetBreadcrumbExtension;
+use TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener;
+use TomvdPeet\BreadcrumbBundle\Twig\BreadcrumbTrailExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -14,7 +14,7 @@ class ExtensionTest extends TestCase
     public function testContainerHasExtension(): void
     {
         $container = new ContainerBuilder();
-        $extension = new APYBreadcrumbTrailExtension();
+        $extension = new TomvdPeetBreadcrumbExtension();
         $extension->load([], $container);
 
         self::assertTrue($container->hasDefinition(Trail::class));

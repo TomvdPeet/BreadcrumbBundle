@@ -1,8 +1,8 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\Fixtures;
+namespace TomvdPeet\BreadcrumbBundle\Tests\Fixtures;
 
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Breadcrumb(title: 'first-breadcrumb')]
 #[Breadcrumb(title: 'second-breadcrumb')]

@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Symfony bundle to generate a dynamic Twig breadcrumbs trail via PHP attributes, PHP methods, or Twig.",
     "keywords": ["symfony", "breadcrumb Trail", "breadcrumbs", "fil ariane", "attribute"],
-    "homepage": "https://github.com/Abhoryo/APYBreadcrumbTrailBundle",
+    "homepage": "https://github.com/TomvdPeet/BreadcrumbBundle",
     "license": "MIT",
     "require": {
         "php": ">=8.4",
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-          "APY\\BreadcrumbTrailBundle\\": "src/"
+          "TomvdPeet\\BreadcrumbBundle\\": "src/"
         }
     },
     "require-dev": {
@@ -25,7 +25,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-          "APY\\BreadcrumbTrailBundle\\": "tests/"
+          "TomvdPeet\\BreadcrumbBundle\\Tests\\": "tests/"
         }
     }
 }

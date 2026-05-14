@@ -1,8 +1,10 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\BreadcrumbTrail;
+namespace TomvdPeet\BreadcrumbBundle\Tests\BreadcrumbTrail;
 
 use PHPUnit\Framework\TestCase;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

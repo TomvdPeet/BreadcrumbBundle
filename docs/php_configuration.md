@@ -8,8 +8,8 @@ Autowiring has to be enabled for the folder where the controller is located.
 by default have autowiring enabled.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 
 #[Breadcrumb("Level 1")]
 #[Breadcrumb("Level 2")]
@@ -37,8 +37,8 @@ The above example will render the following breadcrumb trail:
 ## Example 2) by autowiring the trail to the action callable)
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 
 #[Breadcrumb("Level 1")]
 #[Breadcrumb("Level 2")]
@@ -60,7 +60,7 @@ Will render the following breadcrumb trail :
 
 ```php
 /**
- * @see APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail::add()
+ * @see TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail::add()
  */
 $trail->add(
     $breadcrumb_or_title,
@@ -87,14 +87,14 @@ $trail->add(
 Assume that you have defined the following route :
 
 ```php
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/var/{var}", name: "my_route")]
 ```
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 
 #[Breadcrumb("Level 1")]
 public function myAction(Trail $trail)
@@ -111,8 +111,8 @@ Will render the following breadcrumb trail :
 ## Position
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 
 #[Breadcrumb("Level 1")]
 public function myAction(Trail $trail)
@@ -132,8 +132,8 @@ Will render the following breadcrumb trail :
 ### Reset the trail
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 
 #[Breadcrumb("Level 1")]
 public function myAction(Trail $trail)

@@ -4,18 +4,14 @@ services:
         autoconfigure: true
         autowire: true
 
-    APY\BreadcrumbTrailBundle\:
+    TomvdPeet\BreadcrumbBundle\:
         resource: '../../*'
-        exclude: '../../{Annotation,Resources}'
+        exclude: '../../{Attribute,Resources}'
 
-    APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail:
+    TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail:
         calls:
-            - setTemplate: ['%apy_breadcrumb_trail.template%']
+            - setTemplate: ['%tomvd_peet_breadcrumb.template%']
 
-    apy_breadcrumb_trail:
-        alias: APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail
-        public: true
-
-    APY\BreadcrumbTrailBundle\EventListener\BreadcrumbListener:
+    TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: -1 }

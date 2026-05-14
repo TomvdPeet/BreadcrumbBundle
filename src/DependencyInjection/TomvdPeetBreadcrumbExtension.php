@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the APYBreadcrumbTrailBundle.
+ * This file is part of the BreadcrumbBundle.
  *
  * (c) Abhoryo <abhoryo@free.fr>
  *
@@ -9,31 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace APY\BreadcrumbTrailBundle\DependencyInjection;
+namespace TomvdPeet\BreadcrumbBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class APYBreadcrumbTrailExtension extends Extension
+class TomvdPeetBreadcrumbExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('apy_breadcrumb_trail.template', $config['template']);
+        $container->setParameter('tomvd_peet_breadcrumb.template', $config['template']);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
-
-        $this->deprecateService($container, 'apy_breadcrumb_trail');
-    }
-
-    private function deprecateService(ContainerBuilder $container, string $id): void
-    {
-        $alias = $container->getAlias($id);
-        $alias->setDeprecated('APY/BreadcrumbTrailBundle', '1.7', 'The service is deprecated, use "%alias_id%" FQCN as service id instead.');
     }
 }

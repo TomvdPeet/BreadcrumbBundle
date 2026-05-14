@@ -5,18 +5,14 @@ preferred way of rendering breadcrumbs is by calling the Twig method on the
 base template.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
-/**
- * @Breadcrumb("Level 1", route="level_1")
- * @Breadcrumb("Level 2")
- */
+#[Breadcrumb("Level 1", route: "level_1")]
+#[Breadcrumb("Level 2")]
 class MyController extends Controller
 {
-    /**
-     * @Breadcrumb("Level 3", route="level_3")
-     * @Breadcrumb("Level 4", route="level_4")
-     */
+    #[Breadcrumb("Level 3", route: "level_3")]
+    #[Breadcrumb("Level 4", route: "level_4")]
     public function myAction()
     {
         /* Awesome code here */
@@ -25,7 +21,7 @@ class MyController extends Controller
 ```
 
 ```twig
-{{ apy_breadcrumb_trail_render() }}
+{{ tomvd_peet_breadcrumb_trail_render() }}
 ```
 
 The above controller's `myAction` will render the following breadcrumb trail:

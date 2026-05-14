@@ -1,6 +1,6 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle\Annotation;
+namespace TomvdPeet\BreadcrumbBundle\Attribute;
 
 /**
  * Resets the breadcrumb trail. Can be applied on controller classes, callables, invokables and action methods.

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the APYBreadcrumbTrailBundle.
+ * This file is part of the BreadcrumbBundle.
  *
  * (c) Abhoryo <abhoryo@free.fr>
  *
@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace APY\BreadcrumbTrailBundle\EventListener;
+namespace TomvdPeet\BreadcrumbBundle\EventListener;
 
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\Annotation\ResetBreadcrumbTrail;
-use APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\ResetBreadcrumbTrail;
+use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 

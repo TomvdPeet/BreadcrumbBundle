@@ -1,13 +1,14 @@
 <?php
 
-namespace APY\BreadcrumbTrailBundle;
+namespace TomvdPeet\BreadcrumbBundle\Tests;
 
 use PHPUnit\Framework\TestCase;
+use TomvdPeet\BreadcrumbBundle\TomvdPeetBreadcrumbBundle;
 
 class BundleInitializationTest extends TestCase
 {
     public function testBundleCanBeInstantiated(): void
     {
-        self::assertInstanceOf(APYBreadcrumbTrailBundle::class, new APYBreadcrumbTrailBundle());
+        self::assertInstanceOf(TomvdPeetBreadcrumbBundle::class, new TomvdPeetBreadcrumbBundle());
     }
 }

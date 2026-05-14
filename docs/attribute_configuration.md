@@ -6,7 +6,7 @@ controller or any other callable. You can also add breadcrumbs using PHP or Twig
 ## Basic example
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Breadcrumb(title: 'Level 1')]
 #[Breadcrumb(title: 'Level 2')]
@@ -65,7 +65,7 @@ Route parameters like `id` can be converted to objects and injected as controlle
 It is possible to display values of these objects in the breadcrumb.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Route("/book/{id}")
 #[Breadcrumb("Books")]
@@ -81,7 +81,7 @@ Will render the following breadcrumb trail :
 > Books > "result of __toString method of $book's Object"
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Route("/book/{id}")
 #[Breadcrumb("Books")]
@@ -99,7 +99,7 @@ Will render the following breadcrumb trail :
 **Note:** The bundle tries to call the methods : `getTitle`, `hasTitle` or `isTitle`.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Route("/book/{id}")
 #[Breadcrumb("Books")]
@@ -115,7 +115,7 @@ Will render the following breadcrumb trail :
 > Books > result of getTitle('argument1') method of $book's Object
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Route("/book/{id}")
 #[Breadcrumb("Books")]
@@ -135,7 +135,7 @@ Will render the following breadcrumb trail :
 Assume that you have defined the following route :
 
 ```php
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/var/{var}', name: 'my_route')]
 ```
@@ -143,7 +143,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #### Basic example
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Breadcrumb("Level 1", routeName: 'my_route')]
 #[Breadcrumb("Level 2")]
@@ -159,8 +159,8 @@ When your the current request context is that you are the `my_action_route` with
 url `http://example.com/var/foo/var1/bar`.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use Symfony\Component\Routing\Annotation\Route;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/var/{var}/var1/{var1}", name: 'my_action_route')]
 #[Breadcrumb("Level 1", routeName: 'my_route', routeParameters: ['var' => '1'])]
@@ -179,8 +179,8 @@ Will render the following breadcrumb trail :
 Assume your controllers are designed like a REST API and you have a `ManyToOne` relationship on `Book -> Author` :
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use Symfony\Component\Routing\Annotation\Route;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/books/{book}", name: 'book', requirements: ['book' => "\d+"])]  // example: /book/53
 #[Breadcrumb({book.author.name}, routeName: 'author', routeParameters: ['author' => {book.author.id}])]  // example: /author/15
@@ -205,7 +205,7 @@ Passing `routeAbsolute` will inform the router to render the routes as absolute,
 the current router request context.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Breadcrumb("Level 1", routeName: 'my_route', routeParameters: ['var1' => 1, 'var2' => 2], routeAbsolute: true)]
 ```
@@ -213,7 +213,7 @@ use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
 ### Position
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Breadcrumb("Level 1")]
 #[Breadcrumb("Level 2", position: 1)]
@@ -232,7 +232,7 @@ Will render the following breadcrumb trail :
 The `attributes` parameter can be provided to show attributes in the rendered html.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 
 #[Breadcrumb("Level 1", attributes: ["class" => "yellow", "title" => "Hello world !"])]
 #[Breadcrumb("Level 2")]
@@ -263,8 +263,8 @@ Resetting might come in handy in case the controller class unwantedly defines
 breadcrumbs already.
 
 ```php
-use APY\BreadcrumbTrailBundle\Annotation\Breadcrumb;
-use APY\BreadcrumbTrailBundle\Annotation\ResetBreadcrumbTrail;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use TomvdPeet\BreadcrumbBundle\Attribute\ResetBreadcrumbTrail;
 
 #[Breadcrumb("Level 1")]
 #[ResetBreadcrumbTrail()]

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the APYBreadcrumbTrailBundle.
+ * This file is part of the BreadcrumbBundle.
  *
  * (c) Abhoryo <abhoryo@free.fr>
  *
@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace APY\BreadcrumbTrailBundle\Annotation;
+namespace TomvdPeet\BreadcrumbBundle\Attribute;
 
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 class Breadcrumb

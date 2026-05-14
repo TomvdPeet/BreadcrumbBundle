@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the APYBreadcrumbTrailBundle.
+ * This file is part of the BreadcrumbBundle.
  *
  * (c) Abhoryo <abhoryo@free.fr>
  *
@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace APY\BreadcrumbTrailBundle\DependencyInjection;
+namespace TomvdPeet\BreadcrumbBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -17,14 +17,14 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('apy_breadcrumb_trail');
+        $treeBuilder = new TreeBuilder('tomvd_peet_breadcrumb');
 
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
                 ->scalarNode('template')
-                    ->defaultValue('@APYBreadcrumbTrail/breadcrumbtrail.html.twig')
+                    ->defaultValue('@TomvdPeetBreadcrumb/breadcrumbtrail.html.twig')
                 ->end()
              ->end()
         ;

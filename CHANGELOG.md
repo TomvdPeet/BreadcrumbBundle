@@ -1,11 +1,11 @@
 # v1.8
 
-- introduce ResetBreadcrumbtrail attribute for resetting trail, prefer over empty annotation
+- introduce ResetBreadcrumbtrail attribute for resetting trail
 
 # v1.7
 
 - support breadcrumbs via PHP Attributes
-- deprecate annotations, to be removed in v2.0
+- remove annotation namespace in favor of native attributes
 
 #2020-06-10
  - Add PHPUnit to integration test bundle

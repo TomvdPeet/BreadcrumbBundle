@@ -9,7 +9,7 @@ In order to do so, you just have to add the service in a global variable.
 #app/config/config.yml
 twig:
     globals:
-        breadcrumb_trail: "@APY\BreadcrumbTrailBundle\BreadcrumbTrail\Trail"
+        breadcrumb_trail: "@TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail"
 ```
 
 ## Basic example
@@ -17,7 +17,7 @@ twig:
 ```twig
 <!-- MyProject\MyBundle\Resources\views\myTemplate.html.twig -->
 {% do breadcrumb_trail.add('My new breadcrumb') %}
-{{ apy_breadcrumb_trail_render() }}
+{{ tomvd_peet_breadcrumb_trail_render() }}
 ```
 
 Functions are chainable so you can write this code:
@@ -25,5 +25,5 @@ Functions are chainable so you can write this code:
 ```twig
 <!-- MyProject\MyBundle\Resources\views\myTemplate.html.twig -->
 {% do breadcrumb_trail.reset().add('breadcrumb 1').add('breadcrumb 2') %}
-{{ apy_breadcrumb_trail_render() }}
+{{ tomvd_peet_breadcrumb_trail_render() }}
 ```
