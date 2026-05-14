@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class BundleInitializationTest extends TestCase
 {
-    public function testBundleCanBeInstantiated()
+    public function testBundleCanBeInstantiated(): void
     {
         self::assertInstanceOf(APYBreadcrumbTrailBundle::class, new APYBreadcrumbTrailBundle());
     }

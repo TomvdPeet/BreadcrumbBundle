@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ExtensionTest extends TestCase
 {
-    public function testContainerHasExtension()
+    public function testContainerHasExtension(): void
     {
         $container = new ContainerBuilder();
         $extension = new APYBreadcrumbTrailExtension();

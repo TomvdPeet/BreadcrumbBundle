@@ -31,7 +31,7 @@ class BreadcrumbListener
     {
     }
 
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event): void
     {
         if (HttpKernelInterface::MAIN_REQUEST != $event->getRequestType()) {
             return;
@@ -58,7 +58,7 @@ class BreadcrumbListener
     /**
      * @param list<Breadcrumb|ResetBreadcrumbTrail> $attributes
      */
-    private function addBreadcrumbsToTrail(array $attributes)
+    private function addBreadcrumbsToTrail(array $attributes): void
     {
         foreach ($attributes as $attribute) {
             if ($attribute instanceof ResetBreadcrumbTrail) {
@@ -86,11 +86,9 @@ class BreadcrumbListener
     }
 
     /**
-     * @param \ReflectionClass|\ReflectionMethod $reflected
-     *
      * @return list<Breadcrumb|ResetBreadcrumbTrail>
      */
-    private function getAttributes($reflected): array
+    private function getAttributes(\ReflectionClass|\ReflectionMethod $reflected): array
     {
         $attributes = [];
         foreach ($reflected->getAttributes() as $reflectionAttribute) {

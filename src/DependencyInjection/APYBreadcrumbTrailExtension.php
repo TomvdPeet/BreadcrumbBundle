@@ -18,9 +18,6 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class APYBreadcrumbTrailExtension extends Extension
 {
-    /**
-     * {@inheritDoc}
-     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();

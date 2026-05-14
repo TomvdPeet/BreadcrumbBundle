@@ -11,7 +11,7 @@ class ResetTrailAttribute extends AbstractController
 {
     #[ResetBreadcrumbTrail]
     #[Breadcrumb(title: 'first-breadcrumb-again')]
-    public function indexAction()
+    public function indexAction(): array
     {
         return [];
     }

@@ -13,32 +13,11 @@ namespace APY\BreadcrumbTrailBundle\BreadcrumbTrail;
 
 class Breadcrumb
 {
-    /**
-     * @var string Title of the breadcrumb
-     */
-    public $title;
-
-    /**
-     * @var string Url of the breadcrumb
-     */
-    public $url;
-
-    /**
-     * @var mixed Additional attributes for the breadcrumb
-     */
-    public $attributes;
-
-    /**
-     * Constructor.
-     *
-     * @param string $title      Title of the breadcrumb
-     * @param string $url        Url of the breadcrumb
-     * @param mixed  $attributes Additional attributes for the breadcrumb
-     */
-    public function __construct($title, $url = null, $attributes = [])
+    public function __construct(
+        public string $title,
+        public ?string $url = null,
+        public mixed $attributes = []
+    )
     {
-        $this->title = $title;
-        $this->url = $url;
-        $this->attributes = $attributes;
     }
 }

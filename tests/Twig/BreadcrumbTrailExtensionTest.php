@@ -13,7 +13,7 @@ use Twig\Environment;
  */
 class BreadcrumbTrailExtensionTest extends TestCase
 {
-    public function testTwigFunctionGetsRegistered()
+    public function testTwigFunctionGetsRegistered(): void
     {
         $trail = new Trail($this->createStub(UrlGeneratorInterface::class), new RequestStack());
         $extension = new BreadcrumbTrailExtension($trail, $this->createStub(Environment::class));

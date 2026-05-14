@@ -17,54 +17,35 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class Trail implements \IteratorAggregate, \Countable
 {
     /**
-     * @var \SplObjectStorage<Breadcrumb> Array of breadcrumbs
+     * @var \SplObjectStorage<Breadcrumb>
      */
-    private $breadcrumbs;
+    private \SplObjectStorage $breadcrumbs;
 
-    /**
-     * @var UrlGeneratorInterface URL generator class
-     */
-    private $router;
+    private ?string $template = null;
 
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var string Template to render the breadcrumb trail
-     */
-    private $template;
-
-    /**
-     * @param UrlGeneratorInterface $router URL generator class
-     */
-    public function __construct(UrlGeneratorInterface $router, RequestStack $requestStack)
+    public function __construct(
+        private UrlGeneratorInterface $router,
+        private RequestStack $requestStack
+    )
     {
-        $this->router = $router;
-        $this->requestStack = $requestStack;
         $this->breadcrumbs = new \SplObjectStorage();
     }
 
-    public function setTemplate($template)
+    public function setTemplate(?string $template): self
     {
         $this->template = $template;
 
         return $this;
     }
 
-    public function getTemplate()
+    public function getTemplate(): ?string
     {
         return $this->template;
     }
 
     /**
-     * Add breadcrumb.
-     *
-     * @param array<string|int,mixed> $routeParameters An array of parameters for the route
-     * @param array<string,mixed>     $attributes      Additional attributes for the breadcrumb
-     *
-     * @return self
+     * @param array<string|int,mixed> $routeParameters
+     * @param array<string,mixed>     $attributes
      *
      * @throws \RuntimeException
      */
@@ -164,29 +145,18 @@ class Trail implements \IteratorAggregate, \Countable
         }
     }
 
-    /**
-     * Reset the trail.
-     *
-     * @return self
-     */
-    public function reset()
+    public function reset(): self
     {
         $this->breadcrumbs->removeAll($this->breadcrumbs);
 
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function count(): int
     {
         return $this->breadcrumbs->count();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Traversable
     {
         $this->breadcrumbs->rewind();
@@ -199,7 +169,7 @@ class Trail implements \IteratorAggregate, \Countable
      *
      * Will eventually return `title` from `organization` when the breadcrumb contains `{organization.author.book.title}`.
      */
-    private function renderObjectValuesInSubject($match, $object, $varName, $renderSubject)
+    private function renderObjectValuesInSubject(array $match, mixed $object, string $varName, string $renderSubject): string
     {
         $functions = $match['function'][0] ? explode('.', $match['function'][0]) : [];
         $parameters = $match['parameters'][0] ? explode(',', $match['parameters'][0]) : [];
@@ -228,7 +198,7 @@ class Trail implements \IteratorAggregate, \Countable
      *
      * Gets used in case breadcrumb values are splitted by dots (e.g. `{organization.author.book.title}`).
      */
-    private function retrieveChildObject($object, $function, $varName, array $functions)
+    private function retrieveChildObject(mixed $object, string $function, string $varName, array $functions): mixed
     {
         if (\is_callable([$object, $fullFunctionName = 'get'.$function])
             || \is_callable([$object, $fullFunctionName = 'has'.$function])
@@ -246,7 +216,7 @@ class Trail implements \IteratorAggregate, \Countable
      * Gets used once the splitted breadcrumb value reached the end of the call stack (e.g. for `title`
      * when `{organization.author.book.title}` gets requested).
      */
-    private function retrieveObjectValue($object, $function, $parameters, $varName, array $functions)
+    private function retrieveObjectValue(mixed $object, string $function, array $parameters, string $varName, array $functions): mixed
     {
         if (\is_callable([$object, $fullFunctionName = 'get'.$function])
             || \is_callable([$object, $fullFunctionName = 'has'.$function])

@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ControllerWithAttributes extends AbstractController
 {
     #[Breadcrumb(title: 'third-breadcrumb')]
-    public function indexAction()
+    public function indexAction(): array
     {
         return [];
     }

@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class BreadcrumbListenerTest extends TestCase
 {
-    public function testAttributes()
+    public function testAttributes(): void
     {
         $breadcrumbTrail = $this->createTrail();
 
@@ -26,7 +26,7 @@ class BreadcrumbListenerTest extends TestCase
         self::assertCount(3, $breadcrumbTrail);
     }
 
-    public function testResetTrailAttribute()
+    public function testResetTrailAttribute(): void
     {
         $breadcrumbTrail = $this->createTrail();
 
@@ -38,7 +38,7 @@ class BreadcrumbListenerTest extends TestCase
         self::assertCount(1, $breadcrumbTrail);
     }
 
-    private function createControllerEvent($controller)
+    private function createControllerEvent(object $controller): ControllerEvent
     {
         $callable = \is_callable($controller) ? $controller : [$controller, 'indexAction'];
 

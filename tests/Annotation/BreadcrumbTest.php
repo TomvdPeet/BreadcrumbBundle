@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class BreadcrumbTest extends TestCase
 {
-    public function testConstructWithSimpleTitle()
+    public function testConstructWithSimpleTitle(): void
     {
         $expected = 'title-of-the-breadcrumb';
         $breadcrumb = new Breadcrumb($expected);

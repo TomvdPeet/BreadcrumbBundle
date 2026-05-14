@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TrailTest extends TestCase
 {
-    public function testRenderSimpleValueObjectValueInBreadcrumbTitle()
+    public function testRenderSimpleValueObjectValueInBreadcrumbTitle(): void
     {
         $router = $this->createStub(UrlGeneratorInterface::class);
         $requestStack = new RequestStack();
@@ -25,22 +25,22 @@ class TrailTest extends TestCase
         $iterator = $trail->getIterator();
         self::assertCount(1, $iterator);
 
-        /** @var Breadcrumb $breadcrumb */
         $breadcrumb = $iterator->current();
+        self::assertInstanceOf(Breadcrumb::class, $breadcrumb);
         self::assertEquals($expected, $breadcrumb->title);
     }
 }
 
 final class User
 {
-    private $name;
+    private string $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

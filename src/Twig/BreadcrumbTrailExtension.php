@@ -16,28 +16,15 @@ use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-/**
- * Provides an extension for Twig to output breadcrumbs.
- */
 class BreadcrumbTrailExtension extends AbstractExtension
 {
-    private Trail $trail;
-    private Environment $templating;
-
-    /**
-     * BreadcrumbTrailExtension constructor.
-     */
-    public function __construct(Trail $trail, Environment $templating)
+    public function __construct(
+        private Trail $trail,
+        private Environment $templating
+    )
     {
-        $this->trail = $trail;
-        $this->templating = $templating;
     }
 
-    /**
-     * Returns a list of functions to add to the existing list.
-     *
-     * @return array An array of functions
-     */
     public function getFunctions(): array
     {
         return [
@@ -46,11 +33,6 @@ class BreadcrumbTrailExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * Renders the breadcrumb trail in a list.
-     *
-     * @return string
-     */
     public function renderBreadcrumbTrail(?string $template = null): string
     {
         return $this->templating->render(
@@ -67,11 +49,6 @@ class BreadcrumbTrailExtension extends AbstractExtension
         );
     }
 
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
     public function getName(): string
     {
         return 'breadcrumbtrail';

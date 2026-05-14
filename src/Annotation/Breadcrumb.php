@@ -14,10 +14,6 @@ namespace APY\BreadcrumbTrailBundle\Annotation;
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 class Breadcrumb
 {
-    /**
-     * @param array<string,mixed> $routeParameters
-     * @param array<string,mixed> $attributes
-     */
     public function __construct(
         private string $title,
         private ?string $routeName = null,
@@ -30,107 +26,72 @@ class Breadcrumb
     {
     }
 
-    /**
-     * Sets the title of the breadcrumb.
-     *
-     * @param string $title The title of the breadcrumb
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * Sets the name of the route.
-     *
-     * @param string $routeName The name of the route
-     */
-    public function setRouteName($routeName)
+    public function setRouteName(?string $routeName): void
     {
         $this->routeName = $routeName;
     }
 
-    public function getRouteName()
+    public function getRouteName(): ?string
     {
         return $this->routeName;
     }
 
-    /**
-     * Sets an array of parameters for the route.
-     *
-     * @param mixed $routeParameters An array of parameters for the route
-     */
-    public function setRouteParameters($routeParameters)
+    public function setRouteParameters(array $routeParameters): void
     {
         $this->routeParameters = $routeParameters;
     }
 
-    public function getRouteParameters()
+    public function getRouteParameters(): array
     {
         return $this->routeParameters;
     }
 
-    /**
-     * Whether to generate an absolute URL.
-     *
-     * @param bool $routeAbsolute Whether to generate an absolute URL
-     */
-    public function setRouteAbsolute($routeAbsolute)
+    public function setRouteAbsolute(bool $routeAbsolute): void
     {
         $this->routeAbsolute = $routeAbsolute;
     }
 
-    public function getRouteAbsolute()
+    public function getRouteAbsolute(): bool
     {
         return $this->routeAbsolute;
     }
 
-    /**
-     * Sets the position of the breadcrumb.
-     *
-     * @param int $position Position of the breadcrumb (default = 0)
-     */
-    public function setPosition($position)
+    public function setPosition(int $position): void
     {
         $this->position = $position;
     }
 
-    public function getPosition()
+    public function getPosition(): int
     {
         return $this->position;
     }
 
-    /**
-     * Sets the template of the breadcrumb trail.
-     *
-     * @param string $template with path of the breadcrumb trail that should get rendered
-     */
-    public function setTemplate($template)
+    public function setTemplate(?string $template): void
     {
         $this->template = $template;
     }
 
-    public function getTemplate()
+    public function getTemplate(): ?string
     {
         return $this->template;
     }
 
-    /**
-     * Sets the additional attributes for the breadcrumb.
-     *
-     * @param array $attributes additional attributes for the breadcrumb
-     */
-    public function setAttributes($attributes)
+    public function setAttributes(array $attributes): void
     {
         $this->attributes = $attributes;
     }
 
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
