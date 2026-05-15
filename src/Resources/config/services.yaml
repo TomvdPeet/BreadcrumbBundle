@@ -13,7 +13,7 @@ services:
             - setTemplate: ['%tomvd_peet_breadcrumb.template%']
 
     TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbLoaderInterface:
-        alias: TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader
+        alias: TomvdPeet\BreadcrumbBundle\Loader\ParentRouteBreadcrumbLoader
 
     TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener:
         tags:

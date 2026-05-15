@@ -32,6 +32,7 @@ The following parameters are available:
 
 * [title](#title) (required)
 * [routeName](#route-name)
+* [parentRoute](#parent-route)
 * [routeParameters](#route-parameters)
 * [routeAbsolute](#route-absolute)
 * [position](#position)
@@ -48,7 +49,8 @@ A full version of the Attribute looks like:
     routeAbsolute: 'bool',
     position: 'int',
     template: 'string',
-    attributes: 'array'
+    attributes: 'array',
+    parentRoute: 'string'
 #)]
 ```
 
@@ -179,6 +181,41 @@ This is equivalent to:
 An explicit `routeName` on the breadcrumb always wins. Class-level route name
 prefixes are combined with method-level route names, and if a method has several
 named routes the first named route is used.
+
+### Parent route
+
+Use `parentRoute` to inherit breadcrumb attributes from another route before the
+current route's breadcrumbs are added:
+
+```php
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/books', name: 'book_index')]
+#[Breadcrumb('Books')]
+public function index(): Response
+{
+    /* Awesome code here */
+}
+
+#[Route('/books/{book}', name: 'book_show')]
+#[Breadcrumb('Book {book.title}', parentRoute: 'book_index')]
+public function show(Book $book): Response
+{
+    /* Awesome code here */
+}
+```
+
+Will render the following breadcrumb trail:
+
+> Books > Book title
+
+Parent routes can also define their own `parentRoute`. A method can define at
+most one parent route boundary, and the boundary must be the first method-level
+breadcrumb. The boundary breadcrumb itself and later, more specific method
+breadcrumbs are kept. When the chain reaches a route without a parent route,
+that terminal route's class-level breadcrumbs become the base of the trail.
+Missing parent routes and circular parent route chains throw runtime exceptions.
 
 ### Route parameters
 

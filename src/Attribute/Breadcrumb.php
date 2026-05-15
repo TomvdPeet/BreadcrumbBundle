@@ -12,7 +12,8 @@ class Breadcrumb
         private bool $routeAbsolute = true,
         private int $position = 0,
         private ?string $template = null,
-        private array $attributes = []
+        private array $attributes = [],
+        private ?string $parentRoute = null
     )
     {
     }
@@ -85,5 +86,15 @@ class Breadcrumb
     public function getAttributes(): array
     {
         return $this->attributes;
+    }
+
+    public function setParentRoute(?string $parentRoute): void
+    {
+        $this->parentRoute = $parentRoute;
+    }
+
+    public function getParentRoute(): ?string
+    {
+        return $this->parentRoute;
     }
 }

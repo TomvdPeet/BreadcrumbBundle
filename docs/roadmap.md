@@ -21,7 +21,7 @@ the trail directly.
 ## Planned Feature Order
 
 1. Automatic route name detection (done)
-2. Parent route support
+2. Parent route support (done, runtime route collection implementation)
 3. Compiled production loader
 
 This order matters. Parent route support depends on route names being present
@@ -92,18 +92,31 @@ Rendering `book_show` should expand to:
 Books > Book Dune
 ```
 
-Expected model changes:
+Implemented model changes:
 
 - add `parentRoute` to the `Breadcrumb` attribute
 - add `parentRoute` to `BreadcrumbDefinition`
 - add the current route name to `BreadcrumbContext`
-- introduce a route-keyed registry or expander that can resolve definitions for
-  a route and walk parent routes
+- introduce a route-keyed expander that can resolve definitions for a route and
+  walk parent routes
 - add cycle detection for parent chains
 
 Parent expansion should happen before definitions are applied to the trail.
 Request-specific placeholders such as `{book.title}` must remain unresolved
 until request time.
+
+The implemented expansion model treats the first method-level breadcrumb with
+`parentRoute` as the boundary where the parent route is attached. That boundary
+must be the first method-level breadcrumb, and only one parent route boundary is
+allowed per method. The boundary breadcrumb and later, more specific method
+breadcrumbs remain in the trail. Class-level breadcrumbs are loaded only for the
+terminal route in the chain, so shared class breadcrumbs act as the root/base
+trail instead of being repeated for every route hop.
+
+The current implementation deliberately uses the router route collection at
+runtime as a temporary bridge. The route-collection access is isolated behind a
+small resolver so the compiled production loader can replace it without moving
+parent route logic into the trail.
 
 ## 3. Compiled Production Loader
 

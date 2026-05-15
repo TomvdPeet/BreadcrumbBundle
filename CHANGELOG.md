@@ -1,3 +1,8 @@
+# Unreleased
+
+- Add `parentRoute` support for attribute breadcrumbs, including nested parent
+  chains, cycle detection, and strict method-level boundary validation.
+
 # v1.8
 
 - introduce ResetBreadcrumbtrail attribute for resetting trail

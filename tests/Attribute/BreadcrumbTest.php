@@ -14,4 +14,11 @@ class BreadcrumbTest extends TestCase
 
         self::assertEquals($expected, $breadcrumb->getTitle());
     }
+
+    public function testConstructWithParentRoute(): void
+    {
+        $breadcrumb = new Breadcrumb('Book', parentRoute: 'book_index');
+
+        self::assertSame('book_index', $breadcrumb->getParentRoute());
+    }
 }

@@ -11,11 +11,16 @@ use TomvdPeet\BreadcrumbBundle\Definition\TemplateDefinition;
 use TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader;
 use TomvdPeet\BreadcrumbBundle\Loader\AttributeRouteNameResolver;
 use TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbContext;
+use TomvdPeet\BreadcrumbBundle\Loader\ParentRouteBreadcrumbLoader;
+use TomvdPeet\BreadcrumbBundle\Loader\ParentRouteControllerResolver;
 use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\ControllerWithAttributes;
 use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\InvokableControllerWithAttributes;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Route as RoutingRoute;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouterInterface;
 
 final class AttributeBreadcrumbLoaderTest extends TestCase
 {
@@ -181,6 +186,141 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
         self::assertInstanceOf(BreadcrumbDefinition::class, $definitions[0]);
         self::assertNull($definitions[0]->routeName);
     }
+
+    public function testItExpandsParentRouteBreadcrumbsBeforeCurrentRouteBreadcrumbs(): void
+    {
+        $loader = $this->createParentRouteLoader([
+            'parent_index' => ParentRouteIndexController::class.'::indexAction',
+        ]);
+
+        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'child_show']),
+            [new ParentRouteChildController(), 'showAction']
+        )));
+
+        self::assertSame(
+            ['Parent', 'Child'],
+            array_map(static fn (BreadcrumbDefinition $definition): string => $definition->title, $definitions)
+        );
+    }
+
+    public function testItExpandsNestedParentRouteBreadcrumbs(): void
+    {
+        $loader = $this->createParentRouteLoader([
+            'grandparent_index' => GrandparentRouteController::class.'::indexAction',
+            'parent_index' => NestedParentRouteController::class.'::indexAction',
+        ]);
+
+        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'child_show']),
+            [new NestedChildRouteController(), 'showAction']
+        )));
+
+        self::assertSame(
+            ['Grandparent', 'Parent', 'Child'],
+            array_map(static fn (BreadcrumbDefinition $definition): string => $definition->title, $definitions)
+        );
+    }
+
+    public function testItThrowsWhenParentRouteCannotBeFound(): void
+    {
+        $loader = $this->createParentRouteLoader([]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Parent breadcrumb route "missing_parent" could not be found.');
+
+        iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'child_show']),
+            [new MissingParentRouteController(), 'showAction']
+        )));
+    }
+
+    public function testItThrowsWhenParentRouteChainContainsACycle(): void
+    {
+        $loader = $this->createParentRouteLoader([
+            'route_a' => CycleRouteAController::class.'::indexAction',
+            'route_b' => CycleRouteBController::class.'::indexAction',
+        ]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Circular breadcrumb parent route detected: route_a -> route_b -> route_a.');
+
+        iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'route_a']),
+            [new CycleRouteAController(), 'indexAction']
+        )));
+    }
+
+    public function testItLoadsClassBreadcrumbsOnlyForTheTerminalParentRoute(): void
+    {
+        $loader = $this->createParentRouteLoader([
+            'class_base_index' => ClassLevelBaseParentController::class.'::indexAction',
+        ]);
+
+        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'class_base_child']),
+            [new ClassLevelBaseChildController(), 'showAction']
+        )));
+
+        self::assertSame(
+            ['Home', 'Base', 'Child'],
+            array_map(static fn (BreadcrumbDefinition $definition): string => $definition->title, $definitions)
+        );
+    }
+
+    public function testItThrowsWhenBreadcrumbsAreDefinedBeforeParentRouteBoundary(): void
+    {
+        $loader = $this->createParentRouteLoader([
+            'parent_index' => ParentRouteIndexController::class.'::indexAction',
+        ]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Breadcrumb route "replaced_before_parent" defines breadcrumb attributes before its parentRoute boundary.');
+
+        iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'replaced_before_parent']),
+            [new ReplacedBeforeParentRouteController(), 'indexAction']
+        )));
+    }
+
+    public function testItThrowsWhenMethodDefinesSeveralParentRouteBoundaries(): void
+    {
+        $loader = $this->createParentRouteLoader([
+            'parent_index' => ParentRouteIndexController::class.'::indexAction',
+        ]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Breadcrumb route "several_parent_boundaries" defines multiple parentRoute boundaries.');
+
+        iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'several_parent_boundaries']),
+            [new SeveralParentRouteBoundariesController(), 'indexAction']
+        )));
+    }
+
+    /**
+     * @param array<string,string> $controllersByRoute
+     */
+    private function createParentRouteLoader(array $controllersByRoute): ParentRouteBreadcrumbLoader
+    {
+        $routeCollection = new RouteCollection();
+
+        foreach ($controllersByRoute as $routeName => $controller) {
+            $routeCollection->add($routeName, new RoutingRoute('/'.$routeName, [
+                '_controller' => $controller,
+            ]));
+        }
+
+        $router = $this->createStub(RouterInterface::class);
+        $router
+            ->method('getRouteCollection')
+            ->willReturn($routeCollection);
+
+        return new ParentRouteBreadcrumbLoader(
+            new AttributeBreadcrumbLoader(),
+            new ParentRouteControllerResolver($router)
+        );
+    }
 }
 
 #[\TomvdPeet\BreadcrumbBundle\Attribute\ResetBreadcrumbTrail]
@@ -251,6 +391,130 @@ final class AutomaticRouteNameController
     #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'First implicit')]
     #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Second implicit')]
     public function severalImplicitBreadcrumbsAction(): array
+    {
+        return [];
+    }
+}
+
+final class ParentRouteIndexController
+{
+    #[Route('/parent', name: 'parent_index')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Parent')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+final class ParentRouteChildController
+{
+    #[Route('/child', name: 'child_show')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child', parentRoute: 'parent_index')]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class GrandparentRouteController
+{
+    #[Route('/grandparent', name: 'grandparent_index')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Grandparent')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+final class NestedParentRouteController
+{
+    #[Route('/parent', name: 'parent_index')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Parent', parentRoute: 'grandparent_index')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+final class NestedChildRouteController
+{
+    #[Route('/child', name: 'child_show')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child', parentRoute: 'parent_index')]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class MissingParentRouteController
+{
+    #[Route('/child', name: 'child_show')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child', parentRoute: 'missing_parent')]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class CycleRouteAController
+{
+    #[Route('/a', name: 'route_a')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'A', parentRoute: 'route_b')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+final class CycleRouteBController
+{
+    #[Route('/b', name: 'route_b')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'B', parentRoute: 'route_a')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+#[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Home')]
+#[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Base')]
+final class ClassLevelBaseParentController
+{
+    #[Route('/class-base', name: 'class_base_index')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+final class ClassLevelBaseChildController
+{
+    #[Route('/class-base/child', name: 'class_base_child')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child', parentRoute: 'class_base_index')]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class ReplacedBeforeParentRouteController
+{
+    #[Route('/replaced-before-parent', name: 'replaced_before_parent')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Old local base')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child one', parentRoute: 'parent_index')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child two')]
+    public function indexAction(): array
+    {
+        return [];
+    }
+}
+
+final class SeveralParentRouteBoundariesController
+{
+    #[Route('/several-parent-boundaries', name: 'several_parent_boundaries')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child one', parentRoute: 'parent_index')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Child two', parentRoute: 'second_parent')]
+    public function indexAction(): array
     {
         return [];
     }

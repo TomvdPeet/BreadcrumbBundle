@@ -349,6 +349,101 @@ Also keep `routeName` explicit for class-level `Breadcrumb` attributes. Automati
 detection only applies to method-level breadcrumbs because the route name comes
 from the controller method route.
 
+## Parent route support
+
+Method-level `Breadcrumb` attributes can now inherit breadcrumb metadata from
+another route with `parentRoute`. This is useful when older code repeated the
+same parent breadcrumb attributes on several child routes.
+
+Before:
+
+```php
+use Symfony\Component\Routing\Attribute\Route;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+
+#[Route('/books/{book}/chapters/{chapter}', name: 'chapter_show')]
+#[Breadcrumb('Books', routeName: 'book_index')]
+#[Breadcrumb('Book {book.title}', routeName: 'book_show', routeParameters: ['book' => '{book.id}'])]
+#[Breadcrumb('Chapter {chapter.title}')]
+public function show(Book $book, Chapter $chapter): Response
+{
+}
+```
+
+After:
+
+```php
+use Symfony\Component\Routing\Attribute\Route;
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+
+#[Route('/books', name: 'book_index')]
+#[Breadcrumb('Books')]
+public function index(): Response
+{
+}
+
+#[Route('/books/{book}', name: 'book_show')]
+#[Breadcrumb('Book {book.title}', parentRoute: 'book_index', routeParameters: ['book' => '{book.id}'])]
+public function book(Book $book): Response
+{
+}
+
+#[Route('/books/{book}/chapters/{chapter}', name: 'chapter_show')]
+#[Breadcrumb('Chapter {chapter.title}', parentRoute: 'book_show')]
+public function chapter(Book $book, Chapter $chapter): Response
+{
+}
+```
+
+Rendering `chapter_show` expands `book_show`, which expands `book_index`, then
+keeps the `Chapter {chapter.title}` breadcrumb that declared `parentRoute`.
+
+### Boundary behavior
+
+`parentRoute` acts as a boundary. On a method, the breadcrumb with `parentRoute`
+must be the first method-level breadcrumb:
+
+```php
+#[Breadcrumb('Section', parentRoute: 'section_index')]
+#[Breadcrumb('Current page')]
+```
+
+renders as:
+
+```text
+section_index trail > Section > Current page
+```
+
+The boundary breadcrumb (`Section`) and later breadcrumbs (`Current page`) are
+kept.
+
+Earlier method breadcrumbs are rejected instead of ignored:
+
+```php
+#[Breadcrumb('Old local base')]
+#[Breadcrumb('Section', parentRoute: 'section_index')]
+#[Breadcrumb('Current page')]
+```
+
+This is invalid because `Old local base` appears before the parent route
+boundary. A method may also define only one breadcrumb with `parentRoute`.
+
+Class-level breadcrumbs are loaded only for the terminal route in the parent
+chain. This lets shared class-level breadcrumbs act as the root/base trail
+without being repeated for every route hop.
+
+### Errors and limits
+
+Missing parent routes throw a runtime exception. Circular chains also throw, for
+example `book_show -> chapter_show -> book_show`.
+
+Dynamic placeholders in titles and `routeParameters` are still resolved at
+request time, after the parent chain has been expanded.
+
+The current runtime implementation resolves parent routes through Symfony's
+router route collection. That lookup is isolated behind the parent route
+resolver so a compiled loader can replace it later.
+
 ## Documentation paths
 
 Documentation moved from `src/Resources/doc/` to `docs/`.

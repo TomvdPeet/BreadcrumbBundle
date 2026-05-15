@@ -23,22 +23,48 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
 
     public function load(BreadcrumbContext $context): iterable
     {
-        $controller = $context->controller;
-
-        $reflectableClass = \is_array($controller) ? $controller[0] : $controller;
-        $reflectableMethod = \is_array($controller) ? $controller[1] : '__invoke';
-
-        $class = new \ReflectionClass($reflectableClass);
+        [$class, $method] = $this->reflectController($context->controller);
 
         foreach ($this->loadFromReflection($class) as $definition) {
             yield $definition;
         }
 
-        $method = $class->getMethod($reflectableMethod);
-
         foreach ($this->loadFromReflection($method, $class) as $definition) {
             yield $definition;
         }
+    }
+
+    /**
+     * @return iterable<BreadcrumbDefinition|ResetTrailDefinition|TemplateDefinition>
+     */
+    public function loadClass(BreadcrumbContext $context): iterable
+    {
+        [$class] = $this->reflectController($context->controller);
+
+        yield from $this->loadFromReflection($class);
+    }
+
+    /**
+     * @return iterable<BreadcrumbDefinition|ResetTrailDefinition|TemplateDefinition>
+     */
+    public function loadMethod(BreadcrumbContext $context): iterable
+    {
+        [$class, $method] = $this->reflectController($context->controller);
+
+        yield from $this->loadFromReflection($method, $class);
+    }
+
+    /**
+     * @return array{0: \ReflectionClass, 1: \ReflectionMethod}
+     */
+    private function reflectController(mixed $controller): array
+    {
+        $reflectableClass = \is_array($controller) ? $controller[0] : $controller;
+        $reflectableMethod = \is_array($controller) ? $controller[1] : '__invoke';
+
+        $class = new \ReflectionClass($reflectableClass);
+
+        return [$class, $class->getMethod($reflectableMethod)];
     }
 
     /**
@@ -73,7 +99,8 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
                 $attribute->getRouteParameters(),
                 $attribute->getRouteAbsolute(),
                 $attribute->getPosition(),
-                $attribute->getAttributes()
+                $attribute->getAttributes(),
+                $attribute->getParentRoute()
             );
         }
     }
