@@ -86,23 +86,23 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
                 continue;
             }
 
-            if (null !== $attribute->getTemplate()) {
-                yield new TemplateDefinition($attribute->getTemplate());
+            if (null !== $attribute->template) {
+                yield new TemplateDefinition($attribute->template);
             }
 
-            if (null === $attribute->getRouteName() && $reflected instanceof \ReflectionMethod && null !== $class && false === $routeNameResolved) {
+            if (null === $attribute->routeName && $reflected instanceof \ReflectionMethod && null !== $class && false === $routeNameResolved) {
                 $resolvedRouteName = $this->routeNameResolver->resolve($class, $reflected, $routeName);
                 $routeNameResolved = true;
             }
 
             yield new BreadcrumbDefinition(
-                $attribute->getTitle(),
-                $attribute->getRouteName() ?? $resolvedRouteName,
-                $attribute->getRouteParameters(),
-                $attribute->getRouteAbsolute(),
-                $attribute->getPosition(),
-                $attribute->getAttributes(),
-                $attribute->getParentRoute()
+                $attribute->title,
+                $attribute->routeName ?? $resolvedRouteName,
+                $attribute->routeParameters,
+                $attribute->routeAbsolute,
+                $attribute->position,
+                $attribute->attributes,
+                $attribute->parentRoute
             );
         }
     }
