@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the BreadcrumbBundle.
- *
- * (c) Abhoryo <abhoryo@free.fr>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace TomvdPeet\BreadcrumbBundle\Attribute;
 
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
