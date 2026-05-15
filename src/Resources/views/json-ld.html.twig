@@ -1,24 +1,22 @@
-{% if breadcrumbs.count %}
-    {% apply spaceless %}
-        <script type="application/ld+json">
-            {
-                "@context": "http://schema.org",
-                "@type": "BreadcrumbList",
-                "itemListElement":
-                [
-            {% for b in breadcrumbs %}
+{%- if breadcrumbs.count -%}
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement":
+            [
+        {%- for b in breadcrumbs %}
+                {
+                    "@type": "ListItem",
+                    "position": {{ loop.index }},
+                    "item":
                     {
-                        "@type": "ListItem",
-                        "position": {{ loop.index }},
-                        "item":
-                        {
-                            "@id": "{{ b.url }}",
-                            "name": "{{ b.title|trans }}"
-                        }
-                    }{% if not loop.last %},{% endif %}
-            {% endfor %}
-            ]
-        }
-        </script>
-    {% endapply %}
-{% endif %}
+                        "@id": "{{ b.url }}",
+                        "name": "{{ b.title|trans }}"
+                    }
+                }{% if not loop.last %},{% endif %}
+        {%- endfor %}
+        ]
+    }
+    </script>
+{%- endif -%}
