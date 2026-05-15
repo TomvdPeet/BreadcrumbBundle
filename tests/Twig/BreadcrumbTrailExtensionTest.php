@@ -25,4 +25,38 @@ class BreadcrumbTrailExtensionTest extends TestCase
         self::assertEquals('tomvd_peet_breadcrumb_trail_render', $functions[0]->getName());
         self::assertEquals('tomvd_peet_breadcrumb_jsonld_render', $functions[1]->getName());
     }
+
+    public function testRenderBreadcrumbTrailUsesTrailTemplateWhenNoTemplateIsPassed(): void
+    {
+        $trail = new Trail($this->createStub(UrlGeneratorInterface::class), new RequestStack());
+        $trail->setTemplate('@App/breadcrumbs/from-trail.html.twig');
+
+        $twig = $this->createMock(Environment::class);
+        $twig
+            ->expects(self::once())
+            ->method('render')
+            ->with('@App/breadcrumbs/from-trail.html.twig', ['breadcrumbs' => $trail])
+            ->willReturn('<nav>trail</nav>');
+
+        $extension = new BreadcrumbTrailExtension($trail, $twig);
+
+        self::assertSame('<nav>trail</nav>', $extension->renderBreadcrumbTrail());
+    }
+
+    public function testRenderBreadcrumbTrailAllowsTemplateOverrideAtRenderTime(): void
+    {
+        $trail = new Trail($this->createStub(UrlGeneratorInterface::class), new RequestStack());
+        $trail->setTemplate('@App/breadcrumbs/from-trail.html.twig');
+
+        $twig = $this->createMock(Environment::class);
+        $twig
+            ->expects(self::once())
+            ->method('render')
+            ->with('@App/breadcrumbs/from-call.html.twig', ['breadcrumbs' => $trail])
+            ->willReturn('<nav>override</nav>');
+
+        $extension = new BreadcrumbTrailExtension($trail, $twig);
+
+        self::assertSame('<nav>override</nav>', $extension->renderBreadcrumbTrail('@App/breadcrumbs/from-call.html.twig'));
+    }
 }

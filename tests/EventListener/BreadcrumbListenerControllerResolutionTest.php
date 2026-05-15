@@ -6,7 +6,9 @@ require_once __DIR__.'/../Fixtures/ControllerWithAttributes.php';
 require_once __DIR__.'/../Fixtures/InvokableControllerWithAttributes.php';
 
 use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
+use TomvdPeet\BreadcrumbBundle\Definition\BreadcrumbDefinitionApplier;
 use TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener;
+use TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader;
 use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\ControllerWithAttributes;
 use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\InvokableControllerWithAttributes;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +23,7 @@ class BreadcrumbListenerControllerResolutionTest extends TestCase
     public function testItSupportsArrayControllerCallables(): void
     {
         $trail = $this->createTrail();
-        $listener = new BreadcrumbListener($trail);
+        $listener = $this->createListener($trail);
         $controller = new ControllerWithAttributes();
         $event = new ControllerEvent(
             $this->createStub(HttpKernelInterface::class),
@@ -38,7 +40,7 @@ class BreadcrumbListenerControllerResolutionTest extends TestCase
     public function testItSupportsInvokableControllerObjects(): void
     {
         $trail = $this->createTrail();
-        $listener = new BreadcrumbListener($trail);
+        $listener = $this->createListener($trail);
         $controller = new InvokableControllerWithAttributes();
         $event = new ControllerEvent(
             $this->createStub(HttpKernelInterface::class),
@@ -58,5 +60,10 @@ class BreadcrumbListenerControllerResolutionTest extends TestCase
             $this->createStub(UrlGeneratorInterface::class),
             new RequestStack()
         );
+    }
+
+    private function createListener(Trail $trail): BreadcrumbListener
+    {
+        return new BreadcrumbListener($trail, new AttributeBreadcrumbLoader(), new BreadcrumbDefinitionApplier());
     }
 }

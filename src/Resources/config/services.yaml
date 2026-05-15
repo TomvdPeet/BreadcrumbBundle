@@ -12,6 +12,9 @@ services:
         calls:
             - setTemplate: ['%tomvd_peet_breadcrumb.template%']
 
+    TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbLoaderInterface:
+        alias: TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader
+
     TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: -1 }

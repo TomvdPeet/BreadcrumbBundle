@@ -15,6 +15,7 @@ Please follow the steps given in [installation.md](doc/installation.md) to insta
 - [Twig configuration](doc/twig_configuration.md)
 - [Render the breadcrumb trail](doc/rendering.md)
 - [Override the template](doc/override_template.md)
+- [Loading roadmap](docs/roadmap.md)
 
 ## Tests
 
