@@ -6,6 +6,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Route as RoutingRoute;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
+use TomvdPeet\BreadcrumbBundle\Exception\AmbiguousBreadcrumbRouteNameException;
 
 class AttributeRouteNameResolver
 {
@@ -21,43 +22,37 @@ class AttributeRouteNameResolver
         $routeCollection = $this->router?->getRouteCollection();
 
         if (null !== $routeCollection) {
-            $routeName = $this->resolveFromRouteCollection($routeCollection, $class, $method, $currentRouteName);
+            $routeName = $this->resolveFromRouteCollection($routeCollection, $class, $method);
 
             if (null !== $routeName) {
                 return $routeName;
             }
         }
 
-        $namePrefix = $this->resolveClassRouteNamePrefix($class);
+        $routeNames = $this->getNamedRouteAttributeNames($class, $method);
 
-        foreach ($this->getRouteAttributes($method) as $route) {
-            if (null === $route->name) {
-                continue;
-            }
-
-            return $namePrefix.$route->name;
+        if (1 < \count($routeNames)) {
+            throw AmbiguousBreadcrumbRouteNameException::forControllerMethod($this->formatControllerMethod($class, $method), $routeNames);
         }
 
-        return null;
+        return $routeNames[0] ?? null;
     }
 
-    private function resolveFromRouteCollection(RouteCollection $routeCollection, \ReflectionClass $class, \ReflectionMethod $method, ?string $currentRouteName): ?string
+    private function resolveFromRouteCollection(RouteCollection $routeCollection, \ReflectionClass $class, \ReflectionMethod $method): ?string
     {
-        if (null !== $currentRouteName) {
-            $currentRoute = $routeCollection->get($currentRouteName);
-
-            if (null !== $currentRoute && $this->routeMatchesMethod($currentRoute, $class, $method)) {
-                return $currentRouteName;
-            }
-        }
+        $routeNames = [];
 
         foreach ($routeCollection->all() as $routeName => $route) {
             if ($this->routeMatchesMethod($route, $class, $method)) {
-                return $routeName;
+                $routeNames[] = $routeName;
             }
         }
 
-        return null;
+        if (1 < \count($routeNames)) {
+            throw AmbiguousBreadcrumbRouteNameException::forControllerMethod($this->formatControllerMethod($class, $method), $routeNames);
+        }
+
+        return $routeNames[0] ?? null;
     }
 
     private function routeMatchesMethod(RoutingRoute $route, \ReflectionClass $class, \ReflectionMethod $method): bool
@@ -83,12 +78,28 @@ class AttributeRouteNameResolver
     }
 
     /**
-     * @return iterable<Route>
+     * @return list<string>
      */
-    private function getRouteAttributes(\ReflectionMethod $method): iterable
+    private function getNamedRouteAttributeNames(\ReflectionClass $class, \ReflectionMethod $method): array
     {
+        $routeNames = [];
+        $namePrefix = $this->resolveClassRouteNamePrefix($class);
+
         foreach ($method->getAttributes(Route::class, \ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
-            yield $attribute->newInstance();
+            $route = $attribute->newInstance();
+
+            if (null === $route->name) {
+                continue;
+            }
+
+            $routeNames[] = $namePrefix.$route->name;
         }
+
+        return $routeNames;
+    }
+
+    private function formatControllerMethod(\ReflectionClass $class, \ReflectionMethod $method): string
+    {
+        return $class->getName().'::'.$method->getName();
     }
 }

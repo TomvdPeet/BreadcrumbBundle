@@ -9,6 +9,7 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 use TomvdPeet\BreadcrumbBundle\Compiler\CompiledBreadcrumbMetadataCompiler;
+use TomvdPeet\BreadcrumbBundle\Exception\AmbiguousBreadcrumbRouteNameException;
 use TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader;
 use TomvdPeet\BreadcrumbBundle\Definition\ParentRouteDefinitionExpander;
 use TomvdPeet\BreadcrumbBundle\Resolver\AttributeRouteNameResolver;
@@ -89,6 +90,22 @@ final class CompiledBreadcrumbMetadataCompilerTest extends TestCase
         $compiled = $compiler->compile();
 
         self::assertSame('compiled_collection_only', $compiled['compiled_collection_only'][0]['routeName']);
+    }
+
+    public function testItThrowsWhenCompilingImplicitBreadcrumbRouteNameForSeveralMatchingRoutes(): void
+    {
+        $compiler = $this->createCompiler([
+            'compiled_collection_first' => CompiledRouteCollectionOnlyController::class.'::showAction',
+            'compiled_collection_second' => CompiledRouteCollectionOnlyController::class.'::showAction',
+        ]);
+
+        $this->expectException(AmbiguousBreadcrumbRouteNameException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Breadcrumb route name cannot be inferred for "%s::showAction" because it matches multiple named routes: "compiled_collection_first", "compiled_collection_second". Configure the breadcrumb routeName explicitly.',
+            CompiledRouteCollectionOnlyController::class
+        ));
+
+        $compiler->compile();
     }
 
     /**

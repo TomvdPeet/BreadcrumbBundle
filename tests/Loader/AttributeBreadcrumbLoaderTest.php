@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Route as RoutingRoute;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
+use TomvdPeet\BreadcrumbBundle\Exception\AmbiguousBreadcrumbRouteNameException;
 
 final class AttributeBreadcrumbLoaderTest extends TestCase
 {
@@ -163,17 +164,20 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
         self::assertSame('admin_book_show', $definitions[0]->routeName);
     }
 
-    public function testItUsesFirstNamedMethodRouteWhenSeveralExist(): void
+    public function testItThrowsWhenInferringMethodBreadcrumbRouteNameFromSeveralNamedRouteAttributes(): void
     {
         $loader = new AttributeBreadcrumbLoader();
 
-        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+        $this->expectException(AmbiguousBreadcrumbRouteNameException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Breadcrumb route name cannot be inferred for "%s::multipleRoutesAction" because it matches multiple named routes: "first_named_route", "second_named_route". Configure the breadcrumb routeName explicitly.',
+            AutomaticRouteNameController::class
+        ));
+
+        iterator_to_array($loader->load(new BreadcrumbContext(
             new Request(),
             [new AutomaticRouteNameController(), 'multipleRoutesAction']
         )));
-
-        self::assertInstanceOf(BreadcrumbDefinition::class, $definitions[0]);
-        self::assertSame('first_named_route', $definitions[0]->routeName);
     }
 
     public function testItLeavesBreadcrumbRouteNameNullWhenNoNamedRouteExists(): void
@@ -204,7 +208,7 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
         self::assertSame('collection_only_show', $definitions[0]->routeName);
     }
 
-    public function testItPrefersCurrentRouteCollectionNameOverAttributeRouteName(): void
+    public function testItPrefersRouteCollectionNameOverAttributeRouteName(): void
     {
         $loader = $this->createRouteCollectionAwareLoader([
             'imported_collection_show' => RouteCollectionPreferredController::class.'::showAction',
@@ -217,6 +221,41 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
 
         self::assertInstanceOf(BreadcrumbDefinition::class, $definitions[0]);
         self::assertSame('imported_collection_show', $definitions[0]->routeName);
+    }
+
+    public function testItThrowsWhenInferringRouteNameFromSeveralMatchingRouteCollectionRoutes(): void
+    {
+        $loader = $this->createRouteCollectionAwareLoader([
+            'collection_first_show' => RouteCollectionOnlyController::class.'::showAction',
+            'collection_second_show' => RouteCollectionOnlyController::class.'::showAction',
+        ]);
+
+        $this->expectException(AmbiguousBreadcrumbRouteNameException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Breadcrumb route name cannot be inferred for "%s::showAction" because it matches multiple named routes: "collection_first_show", "collection_second_show". Configure the breadcrumb routeName explicitly.',
+            RouteCollectionOnlyController::class
+        ));
+
+        iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'collection_first_show']),
+            [new RouteCollectionOnlyController(), 'showAction']
+        )));
+    }
+
+    public function testExplicitBreadcrumbRouteNameAvoidsAmbiguousRouteNameDetection(): void
+    {
+        $loader = $this->createRouteCollectionAwareLoader([
+            'collection_first_show' => ExplicitRouteCollectionController::class.'::showAction',
+            'collection_second_show' => ExplicitRouteCollectionController::class.'::showAction',
+        ]);
+
+        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'collection_first_show']),
+            [new ExplicitRouteCollectionController(), 'showAction']
+        )));
+
+        self::assertInstanceOf(BreadcrumbDefinition::class, $definitions[0]);
+        self::assertSame('explicit_collection_show', $definitions[0]->routeName);
     }
 
     public function testItExpandsParentRouteBreadcrumbsBeforeCurrentRouteBreadcrumbs(): void
@@ -463,6 +502,15 @@ final class RouteCollectionPreferredController
 {
     #[Route('/attribute-route', name: 'attribute_show')]
     #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Collection preferred')]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class ExplicitRouteCollectionController
+{
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Explicit collection', routeName: 'explicit_collection_show')]
     public function showAction(): array
     {
         return [];

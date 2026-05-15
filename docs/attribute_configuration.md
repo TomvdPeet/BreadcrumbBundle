@@ -157,8 +157,8 @@ Will render the following breadcrumb trail :
 
 #### Automatic route name detection
 
-When a `Breadcrumb` attribute is placed on a controller method that also has a
-named Symfony `Route` attribute, the route name is detected automatically:
+When a `Breadcrumb` attribute is placed on a controller method with one matching
+named route, the route name is detected automatically:
 
 ```php
 use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
@@ -179,8 +179,22 @@ This is equivalent to:
 ```
 
 An explicit `routeName` on the breadcrumb always wins. Class-level route name
-prefixes are combined with method-level route names, and if a method has several
-named routes the first named route is used.
+prefixes are combined with method-level route names when the resolver falls back
+to Symfony `Route` attributes.
+
+If a method has several named routes and the breadcrumb has no configured
+`routeName`, an exception is thrown. Configure the breadcrumb route name
+explicitly in that case:
+
+```php
+#[Route('/books/{book}', name: 'book_show')]
+#[Route('/library/{book}', name: 'library_book_show')]
+#[Breadcrumb('Book {book.title}', routeName: 'book_show')]
+public function show(Book $book): Response
+{
+    /* Awesome code here */
+}
+```
 
 ### Parent route
 

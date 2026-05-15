@@ -278,8 +278,9 @@ values are passed through to the router unchanged.
 
 ## Automatic route name detection
 
-Method-level `Breadcrumb` attributes can now infer the route name from a nearby
-named Symfony `Route` attribute. When migrating from
+Method-level `Breadcrumb` attributes can now infer the route name from Symfony's
+route collection, falling back to nearby named Symfony `Route` attributes when a
+route collection match is not available. When migrating from
 `apy/breadcrumbtrail-bundle` or older versions/branches of this bundle, this
 means many breadcrumbs no longer need to repeat the controller method route name.
 
@@ -312,11 +313,21 @@ public function show(Book $book): Response
 ### What changed
 
 - If a method-level breadcrumb has no `routeName`, the attribute loader checks
-  the same method for Symfony `Route` attributes.
-- The first named method route is used.
-- A class-level Symfony route name is treated as a name prefix and is prepended
-  to the method route name.
-- If no named method route exists, the breadcrumb route name stays `null`.
+  Symfony's route collection for a route whose `_controller` points at the same
+  controller method.
+- If the route collection has exactly one named route for the reflected
+  controller method, that route name is used. This keeps imported, renamed,
+  localized, or otherwise transformed route names aligned with the final route
+  collection.
+- If no route collection match is available, the resolver falls back to the
+  previous attribute-only source: the named method `Route` attribute is used,
+  with any class-level Symfony route name prepended as a prefix.
+- If several named routes point at the same controller method and the breadcrumb
+  has no explicit `routeName`, an `AmbiguousBreadcrumbRouteNameException` is
+  thrown. Configure `routeName` on the breadcrumb to make the target
+  deterministic.
+- If neither the route collection nor the method `Route` attributes provide a
+  name, the breadcrumb route name stays `null`.
 - Explicit `routeName` values still win and do not trigger automatic detection.
 
 ### What to update when migrating
@@ -345,9 +356,24 @@ route:
 #[Breadcrumb('Book {book.title}')]
 ```
 
+Also keep `routeName` explicit when the controller method has multiple named
+routes:
+
+```php
+#[Route('/books/{book}', name: 'book_show')]
+#[Route('/library/{book}', name: 'library_book_show')]
+#[Breadcrumb('Book {book.title}', routeName: 'book_show')]
+```
+
 Also keep `routeName` explicit for class-level `Breadcrumb` attributes. Automatic
 detection only applies to method-level breadcrumbs because the route name comes
 from the controller method route.
+
+If your route names are changed by route imports, localized routes, custom
+loaders, or another step that only appears in the final route collection, you no
+longer need to mirror that final name in the breadcrumb. The resolver will use
+the route collection name when it can match the route back to the same
+`Class::method` controller.
 
 ## Parent route support
 
@@ -440,9 +466,10 @@ example `book_show -> chapter_show -> book_show`.
 Dynamic placeholders in titles and `routeParameters` are still resolved at
 request time, after the parent chain has been expanded.
 
-The current runtime implementation resolves parent routes through Symfony's
-router route collection. That lookup is isolated behind the parent route
-resolver so a compiled loader can replace it later.
+Parent routes are resolved through Symfony's router route collection. The
+compiled breadcrumb metadata compiler uses that same route collection during
+cache warmup, so implicit breadcrumb route names are compiled with the final
+route collection name rather than only the raw `Route` attribute name.
 
 ## Documentation paths
 

@@ -51,7 +51,8 @@ Initial behavior:
 - explicit `Breadcrumb::routeName` always wins
 - read nearby Symfony `Route` attributes from the reflected method
 - combine class-level route name prefixes with method-level route names
-- if several named method routes exist, use the first named route initially
+- if several named method routes exist, require an explicit breadcrumb
+  `routeName` to keep the target deterministic
 - if no explicit route name exists, leave the breadcrumb route name as `null`
 - do not reproduce Symfony's generated unnamed-route naming algorithm yet
 
