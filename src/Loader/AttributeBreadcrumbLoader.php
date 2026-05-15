@@ -15,6 +15,12 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
         ResetBreadcrumbTrail::class,
     ];
 
+    public function __construct(
+        private readonly AttributeRouteNameResolver $routeNameResolver = new AttributeRouteNameResolver()
+    )
+    {
+    }
+
     public function load(BreadcrumbContext $context): iterable
     {
         $controller = $context->controller;
@@ -30,7 +36,7 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
 
         $method = $class->getMethod($reflectableMethod);
 
-        foreach ($this->loadFromReflection($method) as $definition) {
+        foreach ($this->loadFromReflection($method, $class) as $definition) {
             yield $definition;
         }
     }
@@ -38,8 +44,11 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
     /**
      * @return iterable<BreadcrumbDefinition|ResetTrailDefinition|TemplateDefinition>
      */
-    private function loadFromReflection(\ReflectionClass|\ReflectionMethod $reflected): iterable
+    private function loadFromReflection(\ReflectionClass|\ReflectionMethod $reflected, ?\ReflectionClass $class = null): iterable
     {
+        $resolvedRouteName = null;
+        $routeNameResolved = false;
+
         foreach ($this->getSupportedAttributes($reflected) as $reflectionAttribute) {
             $attribute = $reflectionAttribute->newInstance();
 
@@ -53,9 +62,14 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
                 yield new TemplateDefinition($attribute->getTemplate());
             }
 
+            if (null === $attribute->getRouteName() && $reflected instanceof \ReflectionMethod && null !== $class && false === $routeNameResolved) {
+                $resolvedRouteName = $this->routeNameResolver->resolve($class, $reflected);
+                $routeNameResolved = true;
+            }
+
             yield new BreadcrumbDefinition(
                 $attribute->getTitle(),
-                $attribute->getRouteName(),
+                $attribute->getRouteName() ?? $resolvedRouteName,
                 $attribute->getRouteParameters(),
                 $attribute->getRouteAbsolute(),
                 $attribute->getPosition(),

@@ -20,7 +20,7 @@ the trail directly.
 
 ## Planned Feature Order
 
-1. Automatic route name detection
+1. Automatic route name detection (done)
 2. Parent route support
 3. Compiled production loader
 

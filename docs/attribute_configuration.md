@@ -153,6 +153,33 @@ Will render the following breadcrumb trail :
 
 > [Level 1](http://example.com) > Level 2
 
+#### Automatic route name detection
+
+When a `Breadcrumb` attribute is placed on a controller method that also has a
+named Symfony `Route` attribute, the route name is detected automatically:
+
+```php
+use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/books/{book}', name: 'book_show')]
+#[Breadcrumb('Book {book.title}')]
+public function show(Book $book): Response
+{
+    /* Awesome code here */
+}
+```
+
+This is equivalent to:
+
+```php
+#[Breadcrumb('Book {book.title}', routeName: 'book_show')]
+```
+
+An explicit `routeName` on the breadcrumb always wins. Class-level route name
+prefixes are combined with method-level route names, and if a method has several
+named routes the first named route is used.
+
 ### Route parameters
 
 When your the current request context is that you are the `my_action_route` with
