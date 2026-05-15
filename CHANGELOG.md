@@ -2,6 +2,8 @@
 
 - Add `parentRoute` support for attribute breadcrumbs, including nested parent
   chains, cycle detection, and strict method-level boundary validation.
+- Compile static breadcrumb metadata during production cache warmup while
+  keeping runtime reflection in debug mode.
 
 # v1.8
 

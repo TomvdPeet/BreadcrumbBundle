@@ -1,6 +1,6 @@
 <?php
 
-namespace TomvdPeet\BreadcrumbBundle\Loader;
+namespace TomvdPeet\BreadcrumbBundle\Context;
 
 use Symfony\Component\HttpFoundation\Request;
 

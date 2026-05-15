@@ -4,9 +4,11 @@ namespace TomvdPeet\BreadcrumbBundle\Loader;
 
 use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 use TomvdPeet\BreadcrumbBundle\Attribute\ResetBreadcrumbTrail;
+use TomvdPeet\BreadcrumbBundle\Context\BreadcrumbContext;
 use TomvdPeet\BreadcrumbBundle\Definition\BreadcrumbDefinition;
 use TomvdPeet\BreadcrumbBundle\Definition\ResetTrailDefinition;
 use TomvdPeet\BreadcrumbBundle\Definition\TemplateDefinition;
+use TomvdPeet\BreadcrumbBundle\Resolver\AttributeRouteNameResolver;
 
 final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
 {

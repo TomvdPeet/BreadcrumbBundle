@@ -1,6 +1,6 @@
 <?php
 
-namespace TomvdPeet\BreadcrumbBundle\Loader;
+namespace TomvdPeet\BreadcrumbBundle\Resolver;
 
 use Symfony\Component\Routing\Attribute\Route;
 

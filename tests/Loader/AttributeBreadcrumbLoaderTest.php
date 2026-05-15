@@ -9,10 +9,12 @@ use TomvdPeet\BreadcrumbBundle\Definition\BreadcrumbDefinition;
 use TomvdPeet\BreadcrumbBundle\Definition\ResetTrailDefinition;
 use TomvdPeet\BreadcrumbBundle\Definition\TemplateDefinition;
 use TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader;
-use TomvdPeet\BreadcrumbBundle\Loader\AttributeRouteNameResolver;
-use TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbContext;
+use TomvdPeet\BreadcrumbBundle\Resolver\AttributeRouteNameResolver;
+use TomvdPeet\BreadcrumbBundle\Context\BreadcrumbContext;
+use TomvdPeet\BreadcrumbBundle\Definition\ParentRouteDefinitionExpander;
 use TomvdPeet\BreadcrumbBundle\Loader\ParentRouteBreadcrumbLoader;
-use TomvdPeet\BreadcrumbBundle\Loader\ParentRouteControllerResolver;
+use TomvdPeet\BreadcrumbBundle\Resolver\ParentRouteControllerResolver;
+use TomvdPeet\BreadcrumbBundle\Resolver\RouteControllerResolver;
 use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\ControllerWithAttributes;
 use TomvdPeet\BreadcrumbBundle\Tests\Fixtures\InvokableControllerWithAttributes;
 use PHPUnit\Framework\TestCase;
@@ -318,7 +320,8 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
 
         return new ParentRouteBreadcrumbLoader(
             new AttributeBreadcrumbLoader(),
-            new ParentRouteControllerResolver($router)
+            new ParentRouteControllerResolver($router, new RouteControllerResolver()),
+            new ParentRouteDefinitionExpander()
         );
     }
 }

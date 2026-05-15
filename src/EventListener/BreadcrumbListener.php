@@ -4,7 +4,7 @@ namespace TomvdPeet\BreadcrumbBundle\EventListener;
 
 use TomvdPeet\BreadcrumbBundle\BreadcrumbTrail\Trail;
 use TomvdPeet\BreadcrumbBundle\Definition\BreadcrumbDefinitionApplier;
-use TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbContext;
+use TomvdPeet\BreadcrumbBundle\Context\BreadcrumbContext;
 use TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbLoaderInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;

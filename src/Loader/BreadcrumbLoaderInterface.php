@@ -2,6 +2,7 @@
 
 namespace TomvdPeet\BreadcrumbBundle\Loader;
 
+use TomvdPeet\BreadcrumbBundle\Context\BreadcrumbContext;
 use TomvdPeet\BreadcrumbBundle\Definition\BreadcrumbDefinition;
 use TomvdPeet\BreadcrumbBundle\Definition\ResetTrailDefinition;
 use TomvdPeet\BreadcrumbBundle\Definition\TemplateDefinition;

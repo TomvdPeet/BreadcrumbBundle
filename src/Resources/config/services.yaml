@@ -12,8 +12,14 @@ services:
         calls:
             - setTemplate: ['%tomvd_peet_breadcrumb.template%']
 
-    TomvdPeet\BreadcrumbBundle\Loader\BreadcrumbLoaderInterface:
-        alias: TomvdPeet\BreadcrumbBundle\Loader\ParentRouteBreadcrumbLoader
+    TomvdPeet\BreadcrumbBundle\Loader\CompiledBreadcrumbLoader:
+        arguments:
+            $cacheFile: '%tomvd_peet_breadcrumb.cache_file%'
+            $fallbackLoader: '@TomvdPeet\BreadcrumbBundle\Loader\ParentRouteBreadcrumbLoader'
+
+    TomvdPeet\BreadcrumbBundle\CacheWarmer\CompiledBreadcrumbCacheWarmer:
+        arguments:
+            $cacheFile: '%tomvd_peet_breadcrumb.cache_file%'
 
     TomvdPeet\BreadcrumbBundle\EventListener\BreadcrumbListener:
         tags:
