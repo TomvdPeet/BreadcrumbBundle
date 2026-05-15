@@ -11,6 +11,7 @@ use TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb;
 use TomvdPeet\BreadcrumbBundle\Compiler\CompiledBreadcrumbMetadataCompiler;
 use TomvdPeet\BreadcrumbBundle\Loader\AttributeBreadcrumbLoader;
 use TomvdPeet\BreadcrumbBundle\Definition\ParentRouteDefinitionExpander;
+use TomvdPeet\BreadcrumbBundle\Resolver\AttributeRouteNameResolver;
 use TomvdPeet\BreadcrumbBundle\Resolver\RouteControllerResolver;
 
 final class CompiledBreadcrumbMetadataCompilerTest extends TestCase
@@ -79,6 +80,17 @@ final class CompiledBreadcrumbMetadataCompilerTest extends TestCase
         self::assertArrayNotHasKey('service_route', $compiled);
     }
 
+    public function testItUsesRouteCollectionNameWhenCompilingImplicitRouteName(): void
+    {
+        $compiler = $this->createCompiler([
+            'compiled_collection_only' => CompiledRouteCollectionOnlyController::class.'::showAction',
+        ]);
+
+        $compiled = $compiler->compile();
+
+        self::assertSame('compiled_collection_only', $compiled['compiled_collection_only'][0]['routeName']);
+    }
+
     /**
      * @param array<string,string> $controllersByRoute
      */
@@ -99,7 +111,7 @@ final class CompiledBreadcrumbMetadataCompilerTest extends TestCase
 
         return new CompiledBreadcrumbMetadataCompiler(
             $router,
-            new AttributeBreadcrumbLoader(),
+            new AttributeBreadcrumbLoader(new AttributeRouteNameResolver($router, new RouteControllerResolver())),
             new ParentRouteDefinitionExpander(),
             new RouteControllerResolver()
         );
@@ -131,6 +143,15 @@ final class CompiledDynamicController
 {
     #[Route('/books/{book}', name: 'compiled_dynamic')]
     #[Breadcrumb('Book {book.title}', routeParameters: ['book' => '{book.id}'])]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class CompiledRouteCollectionOnlyController
+{
+    #[Breadcrumb('Collection only')]
     public function showAction(): array
     {
         return [];

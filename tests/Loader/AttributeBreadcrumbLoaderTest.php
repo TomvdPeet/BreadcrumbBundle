@@ -189,6 +189,36 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
         self::assertNull($definitions[0]->routeName);
     }
 
+    public function testItInfersRouteNameFromRouteCollectionWhenNoRouteAttributeExists(): void
+    {
+        $loader = $this->createRouteCollectionAwareLoader([
+            'collection_only_show' => RouteCollectionOnlyController::class.'::showAction',
+        ]);
+
+        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'collection_only_show']),
+            [new RouteCollectionOnlyController(), 'showAction']
+        )));
+
+        self::assertInstanceOf(BreadcrumbDefinition::class, $definitions[0]);
+        self::assertSame('collection_only_show', $definitions[0]->routeName);
+    }
+
+    public function testItPrefersCurrentRouteCollectionNameOverAttributeRouteName(): void
+    {
+        $loader = $this->createRouteCollectionAwareLoader([
+            'imported_collection_show' => RouteCollectionPreferredController::class.'::showAction',
+        ]);
+
+        $definitions = iterator_to_array($loader->load(new BreadcrumbContext(
+            new Request([], [], ['_route' => 'imported_collection_show']),
+            [new RouteCollectionPreferredController(), 'showAction']
+        )));
+
+        self::assertInstanceOf(BreadcrumbDefinition::class, $definitions[0]);
+        self::assertSame('imported_collection_show', $definitions[0]->routeName);
+    }
+
     public function testItExpandsParentRouteBreadcrumbsBeforeCurrentRouteBreadcrumbs(): void
     {
         $loader = $this->createParentRouteLoader([
@@ -324,6 +354,27 @@ final class AttributeBreadcrumbLoaderTest extends TestCase
             new ParentRouteDefinitionExpander()
         );
     }
+
+    /**
+     * @param array<string,string> $controllersByRoute
+     */
+    private function createRouteCollectionAwareLoader(array $controllersByRoute): AttributeBreadcrumbLoader
+    {
+        $routeCollection = new RouteCollection();
+
+        foreach ($controllersByRoute as $routeName => $controller) {
+            $routeCollection->add($routeName, new RoutingRoute('/'.$routeName, [
+                '_controller' => $controller,
+            ]));
+        }
+
+        $router = $this->createStub(RouterInterface::class);
+        $router
+            ->method('getRouteCollection')
+            ->willReturn($routeCollection);
+
+        return new AttributeBreadcrumbLoader(new AttributeRouteNameResolver($router, new RouteControllerResolver()));
+    }
 }
 
 #[\TomvdPeet\BreadcrumbBundle\Attribute\ResetBreadcrumbTrail]
@@ -394,6 +445,25 @@ final class AutomaticRouteNameController
     #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'First implicit')]
     #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Second implicit')]
     public function severalImplicitBreadcrumbsAction(): array
+    {
+        return [];
+    }
+}
+
+final class RouteCollectionOnlyController
+{
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Collection only')]
+    public function showAction(): array
+    {
+        return [];
+    }
+}
+
+final class RouteCollectionPreferredController
+{
+    #[Route('/attribute-route', name: 'attribute_show')]
+    #[\TomvdPeet\BreadcrumbBundle\Attribute\Breadcrumb(title: 'Collection preferred')]
+    public function showAction(): array
     {
         return [];
     }
@@ -538,10 +608,10 @@ final class CountingAttributeRouteNameResolver extends AttributeRouteNameResolve
 {
     public int $resolveCalls = 0;
 
-    public function resolve(\ReflectionClass $class, \ReflectionMethod $method): ?string
+    public function resolve(\ReflectionClass $class, \ReflectionMethod $method, ?string $currentRouteName = null): ?string
     {
         ++$this->resolveCalls;
 
-        return parent::resolve($class, $method);
+        return parent::resolve($class, $method, $currentRouteName);
     }
 }

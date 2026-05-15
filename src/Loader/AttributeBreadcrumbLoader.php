@@ -27,11 +27,11 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
     {
         [$class, $method] = $this->reflectController($context->controller);
 
-        foreach ($this->loadFromReflection($class) as $definition) {
+        foreach ($this->loadFromReflection($class, routeName: $context->routeName) as $definition) {
             yield $definition;
         }
 
-        foreach ($this->loadFromReflection($method, $class) as $definition) {
+        foreach ($this->loadFromReflection($method, $class, $context->routeName) as $definition) {
             yield $definition;
         }
     }
@@ -43,7 +43,7 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
     {
         [$class] = $this->reflectController($context->controller);
 
-        yield from $this->loadFromReflection($class);
+        yield from $this->loadFromReflection($class, routeName: $context->routeName);
     }
 
     /**
@@ -53,7 +53,7 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
     {
         [$class, $method] = $this->reflectController($context->controller);
 
-        yield from $this->loadFromReflection($method, $class);
+        yield from $this->loadFromReflection($method, $class, $context->routeName);
     }
 
     /**
@@ -72,7 +72,7 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
     /**
      * @return iterable<BreadcrumbDefinition|ResetTrailDefinition|TemplateDefinition>
      */
-    private function loadFromReflection(\ReflectionClass|\ReflectionMethod $reflected, ?\ReflectionClass $class = null): iterable
+    private function loadFromReflection(\ReflectionClass|\ReflectionMethod $reflected, ?\ReflectionClass $class = null, ?string $routeName = null): iterable
     {
         $resolvedRouteName = null;
         $routeNameResolved = false;
@@ -91,7 +91,7 @@ final class AttributeBreadcrumbLoader implements BreadcrumbLoaderInterface
             }
 
             if (null === $attribute->getRouteName() && $reflected instanceof \ReflectionMethod && null !== $class && false === $routeNameResolved) {
-                $resolvedRouteName = $this->routeNameResolver->resolve($class, $reflected);
+                $resolvedRouteName = $this->routeNameResolver->resolve($class, $reflected, $routeName);
                 $routeNameResolved = true;
             }
 
