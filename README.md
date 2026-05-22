@@ -6,15 +6,15 @@ Breadcrumbs can be defined with PHP attributes, PHP and Twig.
 
 ## Installation
 
-Please follow the steps given in [installation.md](doc/installation.md) to install this bundle.
+Please follow the steps given in [installation.md](docs/installation.md) to install this bundle.
 
 ## Bundle documentation
 
-- [Attribute configuration](doc/attribute_configuration.md)
-- [PHP configuration](doc/php_configuration.md)
-- [Twig configuration](doc/twig_configuration.md)
-- [Render the breadcrumb trail](doc/rendering.md)
-- [Override the template](doc/override_template.md)
+- [Attribute configuration](docs/attribute_configuration.md)
+- [PHP configuration](docs/php_configuration.md)
+- [Twig configuration](docs/twig_configuration.md)
+- [Render the breadcrumb trail](docs/rendering.md)
+- [Override the template](docs/override_template.md)
 - [Loading roadmap](docs/roadmap.md)
 - [Migration notes](docs/migration.md)
 

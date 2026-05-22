@@ -1,22 +1,26 @@
 {%- if breadcrumbs.count -%}
+    {%- set itemListElement = [] -%}
+    {%- for breadcrumb in breadcrumbs -%}
+        {%- set itemListElement = itemListElement|merge([{
+            '@type': 'ListItem',
+            'position': loop.index,
+            'item': {
+                '@id': breadcrumb.url,
+                'name': breadcrumb.title|trans,
+            },
+        }]) -%}
+    {%- endfor -%}
     <script type="application/ld+json">
-        {
-            "@context": "http://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement":
-            [
-        {%- for b in breadcrumbs %}
-                {
-                    "@type": "ListItem",
-                    "position": {{ loop.index }},
-                    "item":
-                    {
-                        "@id": "{{ b.url }}",
-                        "name": "{{ b.title|trans }}"
-                    }
-                }{% if not loop.last %},{% endif %}
-        {%- endfor %}
-        ]
-    }
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': itemListElement,
+        }|json_encode(
+            constant('JSON_HEX_TAG')
+            b-or constant('JSON_HEX_AMP')
+            b-or constant('JSON_HEX_APOS')
+            b-or constant('JSON_HEX_QUOT')
+            b-or constant('JSON_UNESCAPED_SLASHES')
+        )|raw }}
     </script>
 {%- endif -%}
